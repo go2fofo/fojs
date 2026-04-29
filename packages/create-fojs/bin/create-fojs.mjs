@@ -79,16 +79,17 @@ async function main() {
   }
 
   const targetDir = path.resolve(process.cwd(), dir);
-  
-  // 兼容 Deno 远程运行的路径获取方式
-  const currentFilePath = fileURLToPath(import.meta.url);
-  const currentDir = path.dirname(currentFilePath);
-  
-  // 指向 packages/create-fojs 目录
-  const pkgRoot = path.resolve(currentDir, '..');
-  const templateRoot = path.join(pkgRoot, 'templates', 'base');
 
-  
+  // 指向 npm 安装目录下的 templates 文件夹
+  const templateRoot = path.resolve(__dirname, '../templates/base');
+
+  // 检查模板是否存在
+  try {
+    await fs.access(templateRoot);
+  } catch {
+    console.error(`错误: 找不到模板目录 ${templateRoot}`);
+    process.exit(1);
+  }
 
 
   await copyDir(templateRoot, targetDir);
@@ -138,7 +139,7 @@ async function main() {
 
     await writeText(
       path.join(targetDir, 'src/App.fo'),
-      `export default () => {\n  return (\n    <div>\n      <h1>fojs + Vue Router</h1>\n      <router-view />\n    </div>\n  )\n}\n`,
+      `// @ts-nocheck\nimport './app.less'\n\nexport default () => {\n  return (\n    <div class=\"page\">\n      <div class=\"card\">\n        <h1>fojs + Vue Router</h1>\n        <router-view />\n      </div>\n    </div>\n  )\n}\n`,
     );
 
     await writeText(
@@ -159,4 +160,3 @@ main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-

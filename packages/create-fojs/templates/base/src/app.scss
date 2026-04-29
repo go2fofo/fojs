@@ -1,0 +1,35 @@
+$bg: #0b1220;
+$brand: #60a5fa;
+$brand2: #a78bfa;
+
+.page {
+  min-height: 100vh;
+  padding: 24px;
+  background:
+    radial-gradient(900px 520px at 18% 0%, rgba($brand, 0.25), transparent 60%),
+    radial-gradient(900px 520px at 82% 0%, rgba($brand2, 0.20), transparent 60%),
+    linear-gradient(180deg, $bg, #070a12);
+  color: rgba(226, 232, 240, 0.92);
+
+  .hero {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .title {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: 0.2px;
+  }
+
+  .sub {
+    margin: 6px 0 0;
+    color: rgba(226, 232, 240, 0.70);
+    font-size: 13px;
+  }
+}
+

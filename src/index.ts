@@ -1,5 +1,6 @@
 import type { Plugin } from 'vite';
 import { compileFo } from './compiler';
+export { useFoEffect, useVModel } from './runtime'
 
 export { compileFo };
 

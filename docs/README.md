@@ -8,7 +8,7 @@
 
 ## 主要特性
 
-- Scoped CSS：在 `.fo` 中声明 `export const css = \`...\``，自动注入且隔离作用域
+- Scoped CSS：在 `.fo` 中声明 `export const css = \`...\`\`，自动注入且隔离作用域
 - 属性透传：`class/style/id` 等 attrs 合并到根节点
 - 响应式解构：`const { x } = props` 自动转换为“可写 ref”（支持跨组件双向绑定）
 - 指令语法糖：支持 `<input $value={state.xxx} />`
@@ -53,7 +53,7 @@ fojs/
 npm i fojs
 ```
 
-2. 配置 `vite.config.ts`
+1. 配置 `vite.config.ts`
 
 ```ts
 import { defineConfig } from 'vite'
@@ -65,7 +65,7 @@ export default defineConfig({
 })
 ```
 
-3. 在项目里添加类型引用（任选其一）
+1. 在项目里添加类型引用（任选其一）
 
 - 方式 A：在 `src/shims-fo.d.ts` 中添加：
 
@@ -106,25 +106,20 @@ npm whoami
 npm login
 ```
 
-2. 更新版本号（建议使用 npm 内置版本管理）
+1. 更新版本号（建议使用 npm 内置版本管理）
 
 ```bash
 npm version patch
 ```
 
-3. 构建（根包发布前需要构建 dist 与类型）
+1. 构建（根包发布前需要构建 dist 与类型）
 
 ```bash
 npm run build
 npm publish --access public
 ```
 
-4. 验证
-
-- npm 站点检查 `fojs` 版本是否更新
-- 本地新建项目安装并跑起来：`npm i fojs` + `vite dev`
-
-### 发布 fo-ui 到 npm（可选）
+## 发布 fo-ui 到 npm（可选）
 
 `packages/fo-ui` 当前是“源码发布”（`.fo` 组件源码直接发布），使用方需要启用 fojs 插件才能编译它。
 
@@ -146,7 +141,7 @@ JSR 发布前的关键点：
 - `version` 建议与 `package.json` 同步（便于维护）
 - `exports` 指向源码入口（本仓库默认是 `./src/index.ts`）
 
-2. 发布命令（npm 环境推荐使用 npx）
+1. 发布命令（npm 环境推荐使用 npx）
 
 ```bash
 npx jsr publish
@@ -154,7 +149,7 @@ npx jsr publish
 
 首次发布会要求你在浏览器中授权，成功后会自动上传并生成文档页面。
 
-3. 验证与使用
+1. 验证与使用
 
 - 打开 `https://jsr.io/@你的账号/fojs` 检查版本、文档与导出是否正确
 - npm/Node 项目中也可以通过 JSR 安装（JSR 会提供 npm 兼容入口），例如：
@@ -167,3 +162,4 @@ npx jsr publish
 - 发布失败时建议先在本地跑一遍构建/类型检查，确保仓库状态干净再发布
 
 > JSR 会为 TypeScript 包生成文档与类型定义，并以 ESM 形式分发，同时可在 Node/Deno/Bun 等环境使用。
+

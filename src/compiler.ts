@@ -5,173 +5,197 @@ import vueJsx from '@vue/babel-plugin-jsx';
 // @ts-ignore
 import tsPlugin from '@babel/plugin-transform-typescript';
 import type { TransformOptions } from '@babel/core';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import babelPluginFojs from './babel-plugin-fojs';
-
 export type CompileFoOptions = {
-  文件路径?: string;
-  根目录?: string;
-  是否启用HMR?: boolean;
+  /** 当前正在处理的文件绝对路径 */
+  filename?: string;
+  /** 项目根目录，主要用于计算 HMR 的相对路径 ID */
+  cwd?: string;
+  /** 是否开启 Vite 热更新注入 */
+  hmr?: boolean;
+  /** 是否为开发模式（影响样式注入逻辑） */
+  isDev?: boolean;
+};
+// --- 内部工具函数 ---
+const __fojs_evalRequire: any = (() => {
+  try { return (0, eval)('require'); } catch { return null; }
+})();
+const require = __fojs_evalRequire || createRequire(path.join(process.cwd(), 'package.json'));
+
+const __fojs_wait = <T>(p: Promise<T>): T => {
+  const sab = new SharedArrayBuffer(4);
+  const ia = new Int32Array(sab);
+  let done = false, value: T | undefined, error: any;
+  p.then((v) => { value = v; done = true; Atomics.store(ia, 0, 1); Atomics.notify(ia, 0); })
+   .catch((e) => { error = e; done = true; Atomics.store(ia, 0, 1); Atomics.notify(ia, 0); });
+  while (!done) Atomics.wait(ia, 0, 0);
+  if (error) throw error;
+  return value as T;
 };
 
-/**
- * 编译 `.fo` 源码为标准 ESM 模块代码
- */
+// --- 样式预处理器逻辑 ---
+const __fojs_preprocessStyle = (source: string, filename: string) => {
+  const blocks = __fojs_findStyleBlocks(source);
+  if (blocks.length === 0) return source;
+  let out = source;
+  for (let idx = blocks.length - 1; idx >= 0; idx--) {
+    const b = blocks[idx];
+    if (b.raw.includes('${')) continue; // 暂不支持动态模板字符串
+    if (b.name !== 'scss' && b.name !== 'less') continue;
+    
+    const text = __fojs_unescapeTemplate(b.raw);
+    let css = '';
+    if (b.name === 'scss') {
+      try {
+        const sass = require('sass');
+        css = sass.compileString(text, { loadPaths: [path.dirname(filename)] }).css;
+      } catch { throw new Error('请安装 sass: npm i -D sass'); }
+    } else {
+      try {
+        const less = require('less');
+        const r: any = __fojs_wait(less.render(text, { filename, paths: [path.dirname(filename)] }));
+        css = r.css;
+      } catch { throw new Error('请安装 less: npm i -D less'); }
+    }
+    const replacement = `export const css = \`${__fojs_escapeTemplate(css)}\``;
+    out = out.slice(0, b.start) + replacement + out.slice(b.end);
+  }
+  return out;
+};
+
+// --- 核心编译函数 ---
 export function compileFo(source: string, options: CompileFoOptions = {}) {
-  const filePath = options.文件路径 || 'virtual.fo';
+  const filename = options.filename || 'virtual.fo';
+  const cwd = options.cwd || process.cwd();
+  
+  // 1. 样式预处理
+  const preprocessed = __fojs_preprocessStyle(source, filename);
 
-  const header = `import { ref, reactive, computed, watch, watchEffect, onMounted, onUnmounted, onUpdated, defineComponent, h, Fragment, Transition, useAttrs, useSlots, toRef } from 'vue';\n` +
-    `/** 将样式注入到页面（仅浏览器环境生效） */\n` +
-    `function __fojs__injectStyle(scopeClass, cssText) {\n` +
-    `  try {\n` +
-    `    if (typeof document === 'undefined') return;\n` +
-    `    const cache = globalThis.__FOJS_STYLE_CACHE__ || (globalThis.__FOJS_STYLE_CACHE__ = new Set());\n` +
-    `    const key = String(scopeClass || '') + '::' + String(cssText || '');\n` +
-    `    if (cache.has(key)) return;\n` +
-    `    const el = document.createElement('style');\n` +
-    `    el.setAttribute('data-fojs-style', String(scopeClass || ''));\n` +
-    `    el.textContent = __fojs__scopeCss(String(scopeClass || ''), String(cssText || ''));\n` +
-    `    document.head.appendChild(el);\n` +
-    `    cache.add(key);\n` +
-    `  } catch (_) {}\n` +
-    `}\n` +
-    `/** 将 CSS 选择器限定在作用域类名下（简单实现，覆盖大多数常见写法） */\n` +
-    `function __fojs__scopeCss(scopeClass, cssText) {\n` +
-    `  if (!scopeClass) return cssText;\n` +
-    `  const prefix = '.' + scopeClass;\n` +
-    `  return String(cssText).replace(/(^|\\}|\\n)\\s*([^@\\n\\{\\}][^\\{\\}]*?)\\s*\\{/g, (m, g1, sel) => {\n` +
-    `    const s = String(sel).trim();\n` +
-    `    if (!s) return m;\n` +
-    `    const next = s.split(',').map(x => prefix + ' ' + x.trim()).join(', ');\n` +
-    `    return g1 + ' ' + next + ' {';\n` +
-    `  });\n` +
-    `}\n` +
-    `/** 将 attrs 合并到根节点，确保 class/style/id 等透传行为稳定 */\n` +
-    `function __fojs__applyAttrs(vnode, attrs) {\n` +
-    `  if (!attrs || !vnode || typeof vnode !== 'object') return vnode;\n` +
-    `  const props = vnode.props || (vnode.props = {});\n` +
-    `  for (const k in attrs) {\n` +
-    `    const v = attrs[k];\n` +
-    `    if (k === 'class') {\n` +
-    `      props.class = props.class ? [props.class, v] : v;\n` +
-    `      continue;\n` +
-    `    }\n` +
-    `    if (k === 'style') {\n` +
-    `      props.style = props.style ? [props.style, v] : v;\n` +
-    `      continue;\n` +
-    `    }\n` +
-    `    if (props[k] == null) props[k] = v;\n` +
-    `  }\n` +
-    `  return vnode;\n` +
-    `}\n` +
-    `function __fojs__cloneShallow(v) {\n` +
-    `  if (Array.isArray(v)) return v.slice();\n` +
-    `  if (v && typeof v === 'object') return Object.assign({}, v);\n` +
-    `  return v;\n` +
-    `}\n` +
-    `/**\n` +
-    ` * 将 props 上的字段包装为“可写 ref”。\n` +
-    ` * - 如果 props[key] 本身就是 ref，则直接返回它（支持直接传 ref 做双向绑定）。\n` +
-    ` * - 否则返回 computed({ get, set })，set 会触发 props['onUpdate:' + key]\n` +
-    ` */\n` +
-    `function __fojs__toModelRef(props, key) {\n` +
-    `  try {\n` +
-    `    const raw = props ? props[key] : undefined;\n` +
-    `    if (raw && typeof raw === 'object' && 'value' in raw) return raw;\n` +
-    `  } catch (_) {}\n` +
-    `  const proxyCache = new WeakMap();\n` +
-    `  let scheduled = false;\n` +
-    `  const emit = () => {\n` +
-    `    if (scheduled) return;\n` +
-    `    scheduled = true;\n` +
-    `    Promise.resolve().then(() => {\n` +
-    `      scheduled = false;\n` +
-    `      const fn = props ? props['onUpdate:' + key] : undefined;\n` +
-    `      if (typeof fn === 'function') fn(__fojs__cloneShallow(props ? props[key] : undefined));\n` +
-    `    });\n` +
-    `  };\n` +
-    `  const wrap = (obj) => {\n` +
-    `    if (!obj || typeof obj !== 'object') return obj;\n` +
-    `    const tag = Object.prototype.toString.call(obj);\n` +
-    `    if (tag !== '[object Object]' && tag !== '[object Array]') return obj;\n` +
-    `    if (proxyCache.has(obj)) return proxyCache.get(obj);\n` +
-    `    const p = new Proxy(obj, {\n` +
-    `      get(target, prop, receiver) {\n` +
-    `        const v = Reflect.get(target, prop, receiver);\n` +
-    `        return (v && typeof v === 'object') ? wrap(v) : v;\n` +
-    `      },\n` +
-    `      set(target, prop, value, receiver) {\n` +
-    `        const ok = Reflect.set(target, prop, value, receiver);\n` +
-    `        emit();\n` +
-    `        return ok;\n` +
-    `      },\n` +
-    `      deleteProperty(target, prop) {\n` +
-    `        const ok = Reflect.deleteProperty(target, prop);\n` +
-    `        emit();\n` +
-    `        return ok;\n` +
-    `      },\n` +
-    `    });\n` +
-    `    proxyCache.set(obj, p);\n` +
-    `    return p;\n` +
-    `  };\n` +
-    `  return computed({\n` +
-    `    get() {\n` +
-    `      const v = props ? props[key] : undefined;\n` +
-    `      return (v && typeof v === 'object') ? wrap(v) : v;\n` +
-    `    },\n` +
-    `    set(v) {\n` +
-    `      const fn = props ? props['onUpdate:' + key] : undefined;\n` +
-    `      if (typeof fn === 'function') fn(v);\n` +
-    `    },\n` +
-    `  })\n` +
-    `}\n` +
-    `/** 给根节点附加作用域类名（用于 Scoped CSS） */\n` +
-    `function __fojs__attachScope(vnode, scopeClass) {\n` +
-    `  if (!scopeClass || !vnode || typeof vnode !== 'object') return vnode;\n` +
-    `  const props = vnode.props || (vnode.props = {});\n` +
-    `  props.class = props.class ? [props.class, scopeClass] : scopeClass;\n` +
-    `  return vnode;\n` +
-    `}\n` +
-    `/** 极简全局状态：跨组件共享，基于 reactive */\n` +
-    `function useFoStore(key = 'default', init) {\n` +
-    `  const map = globalThis.__FOJS_STORE__ || (globalThis.__FOJS_STORE__ = new Map());\n` +
-    `  if (map.has(key)) return map.get(key);\n` +
-    `  const base = typeof init === 'function' ? init() : (init || {});\n` +
-    `  const state = reactive(base);\n` +
-    `  map.set(key, state);\n` +
-    `  return state;\n` +
-    `}\n`;
+  // 2. 注入运行时辅助函数 (Runtime Library)
+  // 这是 fojs 能够作为 Vue 超集运行的关键
+const header = `import { 
+  ref, reactive, computed, watch, watchEffect, 
+  onMounted, onUnmounted, onUpdated, defineComponent, 
+  h, Fragment, Transition, useAttrs, useSlots, toRef,
+  getCurrentInstance
+} from 'vue';
 
+/** fojs：核心内部工具 - 获取当前组件的原始 Props */
+function __fojs__getRawProps() {
+  const instance = getCurrentInstance();
+  if (!instance) return {};
+  // 在 Vue 3 中，instance.props 是已经处理好的响应式对象
+  return instance.props;
+}
+
+/** fojs：增强型 defineProps (运行时安全版) */
+function defineProps(defaults) {
+  const rawProps = __fojs__getRawProps();
+  const attrs = useAttrs();
+  
+  return new Proxy(rawProps, {
+    get(target, key) {
+      if (key === '__isProxy') return true;
+      if (key === '__raw') return target;
+      
+      // 优先级：1. 显式传入的 props -> 2. 透传的 attrs -> 3. 默认值
+      const val = target[key];
+      if (val !== undefined) return val;
+      
+      const attrVal = attrs[key];
+      if (attrVal !== undefined) return attrVal;
+      
+      return defaults ? defaults[key] : undefined;
+    },
+    has(target, key) {
+      return (key in target) || (key in attrs) || (defaults && key in defaults);
+    },
+    ownKeys(target) {
+      const keys = new Set(Reflect.ownKeys(target));
+      Object.keys(attrs).forEach(k => keys.add(k));
+      if (defaults) Object.keys(defaults).forEach(k => keys.add(k));
+      return Array.from(keys);
+    },
+    getOwnPropertyDescriptor() {
+      return { enumerable: true, configurable: true };
+    }
+  });
+}
+
+/** fojs：增强型 defineEmits */
+function defineEmits() {
+  const instance = getCurrentInstance();
+  return (event, ...args) => {
+    if (instance) instance.emit(event, ...args);
+  };
+}
+
+/** fojs：Effect 增强（自动清理） */
+function useFoEffect(effect, deps) {
+  let cleanup;
+  const run = () => {
+    if (typeof cleanup === 'function') cleanup();
+    const next = effect();
+    cleanup = typeof next === 'function' ? next : undefined;
+  };
+  const stop = (Array.isArray(deps) && deps.length > 0) 
+    ? watch(deps, run, { immediate: true }) 
+    : watchEffect(run);
+  onUnmounted(() => { stop(); if (cleanup) cleanup(); });
+}
+
+/** fojs：属性透传合并 */
+function __fojs__applyAttrs(vnode, attrs) {
+  if (!attrs || !vnode || typeof vnode !== 'object') return vnode;
+  const props = vnode.props || (vnode.props = {});
+  for (const k in attrs) {
+    if (k === 'class') props.class = props.class ? [props.class, attrs.class] : attrs.class;
+    else if (k === 'style') props.style = props.style ? [props.style, attrs.style] : attrs.style;
+    else if (props[k] == null) props[k] = attrs[k];
+  }
+  return vnode;
+}
+
+/** fojs：状态共享 */
+function useFoStore(key = 'default', init) {
+  const map = globalThis.__FOJS_STORE__ || (globalThis.__FOJS_STORE__ = new Map());
+  if (map.has(key)) return map.get(key);
+  const state = reactive(typeof init === 'function' ? init() : (init || {}));
+  map.set(key, state);
+  return state;
+}
+`;
+
+  // 3. Babel 转换 (TSX -> Vue defineComponent)
   const babelOptions: TransformOptions = {
-    filename: filePath,
+    filename,
     plugins: [
-      babelPluginFojs,
+      babelPluginFojs, // 关键：负责重写 export default 为 defineComponent 结构
       [tsPlugin, { isTSX: true, allExtensions: true }],
       [vueJsx, { optimize: true }],
     ],
   };
 
-  const result = transformSync(source, babelOptions);
+  const result = transformSync(preprocessed, babelOptions);
   const compiled = header + (result?.code || '');
 
+  // 4. HMR 热更新注入
   let hmrCode = '';
-  if (options.是否启用HMR) {
-    const root = options.根目录 || process.cwd();
-    const rel = path.posix.relative(root.replace(/\\/g, '/'), filePath.replace(/\\/g, '/'));
+  if (options.hmr) {
+    const normRoot = cwd.replace(/\\/g, '/');
+    const normFile = filename.replace(/\\/g, '/');
+    const rel = path.posix.relative(normRoot, normFile);
     const hmrId = `fojs:${rel}`;
 
-    hmrCode = `\n` +
-      `if (import.meta.hot) {\n` +
-      `  const __fojs_hmr_id = ${JSON.stringify(hmrId)};\n` +
-      `  try {\n` +
-      `    // @ts-ignore\n` +
-      `    __VUE_HMR_RUNTIME__.createRecord(__fojs_hmr_id, __fojs_main);\n` +
-      `    import.meta.hot.accept((m) => {\n` +
-      `      // @ts-ignore\n` +
-      `      __VUE_HMR_RUNTIME__.reload(__fojs_hmr_id, m.default);\n` +
-      `    });\n` +
-      `  } catch (_) {}\n` +
-      `}\n`;
+    hmrCode = `\nif (import.meta.hot) {
+  const __id = ${JSON.stringify(hmrId)};
+  try {
+    __VUE_HMR_RUNTIME__.createRecord(__id, __fojs_main);
+    import.meta.hot.accept(m => __VUE_HMR_RUNTIME__.reload(__id, m.default));
+  } catch (e) { console.error('[fojs] HMR failed:', e); }
+}\n`;
   }
 
   return {
@@ -179,3 +203,53 @@ export function compileFo(source: string, options: CompileFoOptions = {}) {
     map: result?.map,
   };
 }
+type __FojsStyleBlock = {
+  name: string;
+  start: number;
+  end: number;
+  raw: string;
+};
+
+const __fojs_findStyleBlocks = (code: string): __FojsStyleBlock[] => {
+  const blocks: __FojsStyleBlock[] = [];
+  const re = /export\s+const\s+(css|style|scss|less)\s*=\s*`/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(code))) {
+    const name = m[1];
+    let i = re.lastIndex;
+    let raw = '';
+    while (i < code.length) {
+      const ch = code[i];
+      if (ch === '`') break;
+      if (ch === '\\' && i + 1 < code.length) {
+        raw += ch + code[i + 1];
+        i += 2;
+        continue;
+      }
+      raw += ch;
+      i++;
+    }
+    if (i >= code.length) break;
+    const endBacktick = i;
+    const start = m.index;
+    const end = endBacktick + 1;
+    blocks.push({ name, start, end, raw });
+    re.lastIndex = end;
+  }
+  return blocks;
+};
+
+const __fojs_unescapeTemplate = (raw: string) => {
+  let s = raw;
+  s = s.replace(/\\`/g, '`');
+  s = s.replace(/\\\\/g, '\\');
+  s = s.replace(/\\n/g, '\n');
+  s = s.replace(/\\r/g, '\r');
+  s = s.replace(/\\t/g, '\t');
+  return s;
+};
+
+const __fojs_escapeTemplate = (text: string) => {
+  return String(text).replace(/\\/g, '\\\\').replace(/`/g, '\\`');
+};
+

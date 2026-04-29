@@ -1,41 +1,216 @@
-export const css = `
-.app {
-  padding: 24px;
-}
+/**
+ * 说明：用于关闭对 `.fo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
+ */
+// @ts-nocheck
+import './app.less'
+export const scss = `
+$border: rgba(148, 163, 184, 0.18);
+$text: rgba(226, 232, 240, 0.92);
+$muted: rgba(226, 232, 240, 0.70);
+$brand: #60a5fa;
+$brand2: #a78bfa;
 
-.panel {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 16px;
-  max-width: 560px;
-}
-
-button {
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid $border;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 12px;
+  color: $muted;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, $brand, $brand2);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 14px;
+  align-items: start;
+}
+
+.card {
+  border: 1px solid $border;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.cardTitle {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.muted {
+  color: $muted;
+}
+
+.kpi {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.kpiBox {
+  border: 1px solid $border;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.kpiLabel {
+  font-size: 12px;
+  color: $muted;
+}
+
+.kpiValue {
+  font-size: 18px;
+  font-weight: 900;
+  margin-top: 6px;
+  color: $text;
+}
+
+input {
+  width: 100%;
+  max-width: 360px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid $border;
+  background: rgba(255, 255, 255, 0.03);
+  color: $text;
+  outline: none;
+
+  &:focus {
+    border-color: rgba($brand, 0.55);
+    box-shadow: 0 0 0 3px rgba($brand, 0.15);
+  }
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
 `;
 
-export default () => {
-  const count = ref(0)
-  const state = useFoStore('demo', () => ({ name: 'fojs' }))
+const 计数卡片 = (context) => {
+  const props = defineProps<{
+    title: string
+    count?: number
+  }>({
+    count: 0,
+  })
 
-  const inc = () => {
-    count.value++
+  const emit = defineEmits<{
+    (e: 'change', value: number): void
+    (e: 'update:count', value: number): void
+  }>()
+
+  const add = () => {
+    const next = (props.count ?? 0) + 1
+    emit('update:count', next)
+    emit('change', next)
   }
 
   return (
-    <div class="app">
-      <h1>fojs 项目</h1>
-      <div class="panel">
-        <p>名称：{state.name}</p>
-        <p>计数：{count.value}</p>
-        <button onClick={inc}>加 1</button>
-      </div>
-      <div style="margin-top: 16px;">
-        <p>指令语法糖示例：</p>
-        <input $value={state.name} placeholder="请输入名称" />
+    <div class="card">
+      <h2 class="cardTitle">语法增强：defineProps / defineEmits</h2>
+      <p class="muted" style="margin: 0 0 10px;">
+        点击按钮会触发 emit('update:count') 与 emit('change')，父组件通过 onUpdate:count / onChange 接收。
+      </p>
+      <div class="row">
+        <strong>{props.title}</strong>
+        <span class="muted">count：{props.count}</span>
+        <button class="btn" onClick={add}>点我 +1（emit）</button>
       </div>
     </div>
   )
 }
 
+export default () => {
+  const count = ref(0)
+  const state = useFoStore('demo', () => ({ name: 'fojs' }))
+  const emitLogs = ref([])
+
+  const inc = () => {
+    count.value++
+  }
+  const push = (msg) => emitLogs.value.unshift(msg)
+
+  return (
+    <div class="page">
+      <div class="hero">
+        <div>
+          <h1 class="title">fojs 项目</h1>
+          <p class="sub">这是由 create-fojs 生成的初始页面，你可以直接改这份 .fo 看热更新效果。</p>
+        </div>
+        <div class="badge">
+          <span class="dot" />
+          <span>Vite + Vue + fojs</span>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2 class="cardTitle">快速体验</h2>
+          <div class="row">
+            <button class="btn" onClick={inc}>计数 + 1</button>
+            <span class="muted">当前计数：</span>
+            <strong>{count.value}</strong>
+          </div>
+
+          <div class="kpi">
+            <div class="kpiBox">
+              <div class="kpiLabel">全局状态（useFoStore）</div>
+              <div class="kpiValue">{state.name}</div>
+            </div>
+            <div class="kpiBox">
+              <div class="kpiLabel">本地状态（ref）</div>
+              <div class="kpiValue">{count.value}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="cardTitle">语法糖：$value</h2>
+          <p class="muted" style="margin: 0 0 10px;">
+            直接把状态变量绑定到输入框，输入会自动回写。
+          </p>
+          <input $value={state.name} placeholder="请输入名称" />
+          <p class="muted" style="margin: 10px 0 0;">
+            当前值：<strong>{state.name}</strong>
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top: 14px;">
+        <计数卡片
+          title="从父组件传入的标题"
+          count={count.value}
+          onUpdate:count={(v) => (count.value = v)}
+          onChange={(v) => push(`父组件收到 change：${v}`)}
+        />
+        <div class="muted" style="margin-top: 10px;">
+          {emitLogs.value.length === 0 ? '暂无日志，点击上面按钮试试。' : emitLogs.value.map((x) => <div>{x}</div>)}
+        </div>
+      </div>
+    </div>
+  )
+}

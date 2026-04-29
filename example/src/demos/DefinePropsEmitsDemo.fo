@@ -1,0 +1,143 @@
+/**
+ * 说明：用于关闭对 `.fo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
+ */
+// @ts-nocheck
+
+export const css = `
+.wrap {
+  display: grid;
+  gap: 12px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.card {
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  padding: 14px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(96, 165, 250, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.muted {
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 13px;
+}
+
+.btn {
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.20), rgba(167, 139, 250, 0.14));
+  color: rgba(226, 232, 240, 0.92);
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.log-container {
+  max-height: 150px;
+  overflow-y: auto;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 10px;
+}
+`
+
+const myComponent = (context) => {
+  // 1. 显式声明 Props 类型与默认值
+  const props = defineProps<{
+    title: string
+    count?: number
+  }>({
+    count: 0,
+  })
+
+  // 2. 显式声明 Emits 类型
+  const emit = defineEmits<{
+    (e: 'change', value: number): void
+    (e: 'update:count', value: number): void
+  }>()
+
+  const add = () => {
+    const next = (props.count ?? 0) + 1
+    // 触发 Vue 规范的 update 事件以支持双向绑定
+    emit('update:count', next)
+    // 触发业务自定义事件
+    emit('change', next)
+  }
+
+  return (
+    <div class="card">
+      <div class="row">
+        <strong>{props.title}</strong>
+        <span class="muted">当前数值：{props.count}</span>
+      </div>
+      <div class="row" style="margin-top: 12px;">
+        <button class="btn" onClick={add}>子组件 +1</button>
+        <span class="muted">触发：emit('change')</span>
+      </div>
+    </div>
+  )
+}
+
+export default () => {
+  // 直接使用 Vue 响应式 API，无需 import
+  const state = reactive({ count: 1 })
+  const logs = ref<string[]>([])
+
+  const pushLog = (msg: string) => {
+    const time = new Date().toLocaleTimeString()
+    logs.value.unshift(`[${time}] ${msg}`)
+  }
+
+  return (
+    <div class="wrap">
+      <h2 style="color: #60a5fa; margin-bottom: 4px;">5HO7 架构演示</h2>
+      <p class="muted">
+        基于 <strong>fojs</strong> 的 DSL 增强：React 渲染函数写法 + Vue 响应式内核。
+      </p>
+
+      {/* 使用自定义子组件，并演示属性透传与事件监听 */}
+      <myComponent
+        title="双向绑定计数器"
+        count={state.count}
+        onUpdate:count={(v) => (state.count = v)}
+        onChange={(v) => pushLog(`收到 change 事件，新值为 ${v}`)}
+      />
+
+      <div class="card" style="margin-top: 20px; border-style: dashed;">
+        <div class="row">
+          <span class="muted">父组件状态（state.count）：</span>
+          <strong style="color: #a78bfa; font-size: 1.2em;">{state.count}</strong>
+        </div>
+        
+        <div class="log-container" style="margin-top: 15px;">
+          <div class="muted" style="margin-bottom: 8px; font-weight: bold;">事件日志流：</div>
+          {logs.value.length === 0 ? (
+            <div class="muted">暂无操作日志...</div>
+          ) : (
+            logs.value.map((log) => (
+              <div class="muted" style="margin-bottom: 4px; font-family: monospace;">
+                {log}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

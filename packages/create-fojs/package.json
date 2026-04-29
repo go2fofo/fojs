@@ -1,6 +1,6 @@
 {
   "name": "create-fojs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Scaffold a new fojs project",
   "type": "module",
   "bin": {
@@ -14,6 +14,6 @@
     "node": ">=18.0.0"
   },
   "keywords": ["fojs", "create-app", "5ho7", "vite-plugin"],
-  "author": "whq",
+  "author": "fofo",
   "license": "MIT"
 }

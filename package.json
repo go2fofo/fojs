@@ -1,10 +1,16 @@
 {
-  "name": "fojs",
-  "version": "1.0.0",
+  "name": "@fo4/fojs",
+  "version": "1.0.2",
   "description": "An innovative frontend DSL framework (React shell, Vue soul)",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "shims-fo.d.ts",
+    "README.md",
+    "LICENSE"
+  ],  
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -14,7 +20,8 @@
     "./shims-fo": "./shims-fo.d.ts"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly",
+    "build1": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly",
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "dev": "tsup src/index.ts --format cjs,esm --watch",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
@@ -35,6 +42,10 @@
     "@babel/core": "^7.23.0",
     "@babel/plugin-transform-typescript": "^7.23.0",
     "@vue/babel-plugin-jsx": "^1.2.0"
+  },
+  "optionalDependencies": {
+    "less": "^4.2.0",
+    "sass": "^1.75.0"
   },
   "peerDependencies": {
     "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0",

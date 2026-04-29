@@ -1,7 +1,7 @@
 /*
  * @Author: fofo
  * @Date: 2026-04-29 10:23:14
- * @LastEditTime: 2026-04-29 14:49:27
+ * @LastEditTime: 2026-04-29 18:15:02
  * @LastEditors: fofo
  * @Description: 
  * @FilePath: /fojs/example/src/App.fo
@@ -175,6 +175,8 @@ import ReactiveDestructureDemo from './demos/ReactiveDestructureDemo.fo'
 import StoreDemo from './demos/StoreDemo.fo'
 import ModelSugarDemo from './demos/ModelSugarDemo.fo'
 import LifecycleDemo from './demos/LifecycleDemo.fo'
+import PreprocessorDemo from './demos/PreprocessorDemo.fo'
+import DefinePropsEmitsDemo from './demos/DefinePropsEmitsDemo.fo'
 import FoUiDemo from './demos/FoUiDemo.fo'
 
 export default () => {
@@ -188,6 +190,8 @@ export default () => {
     { key: '全局状态', comp: StoreDemo },
     { key: '语法糖 $value', comp: ModelSugarDemo },
     { key: '生命周期', comp: LifecycleDemo },
+    { key: '样式预处理', comp: PreprocessorDemo },
+    { key: 'defineProps/defineEmits', comp: DefinePropsEmitsDemo },
     { key: 'fo-ui', comp: FoUiDemo },
   ]
 

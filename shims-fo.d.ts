@@ -17,6 +17,20 @@ declare const defineComponent: typeof import('vue')['defineComponent'];
 declare const h: typeof import('vue')['h'];
 declare const Fragment: typeof import('vue')['Fragment'];
 declare const Transition: typeof import('vue')['Transition'];
+declare const useAttrs: typeof import('vue')['useAttrs'];
+declare const useSlots: typeof import('vue')['useSlots'];
+declare const toRef: typeof import('vue')['toRef'];
+
+// fojs 运行时注入的辅助函数（编译后的 .fo 模块内可直接使用）
+declare function useFoStore<T extends Record<string, any>>(
+  key?: string,
+  init?: T | (() => T),
+): T;
+declare function useFoEffect(
+  effect: () => void | (() => void),
+  deps?: readonly unknown[],
+): void;
+declare function useVModel<T = any>(props: any, key: string): import('vue').ComputedRef<T>;
 
 // JSX 语法提示
 declare namespace JSX {
