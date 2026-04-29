@@ -1,0 +1,41 @@
+export const css = `
+.app {
+  padding: 24px;
+}
+
+.panel {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  max-width: 560px;
+}
+
+button {
+  padding: 8px 12px;
+}
+`;
+
+export default () => {
+  const count = ref(0)
+  const state = useFoStore('demo', () => ({ name: 'fojs' }))
+
+  const inc = () => {
+    count.value++
+  }
+
+  return (
+    <div class="app">
+      <h1>fojs 项目</h1>
+      <div class="panel">
+        <p>名称：{state.name}</p>
+        <p>计数：{count.value}</p>
+        <button onClick={inc}>加 1</button>
+      </div>
+      <div style="margin-top: 16px;">
+        <p>指令语法糖示例：</p>
+        <input $value={state.name} placeholder="请输入名称" />
+      </div>
+    </div>
+  )
+}
+

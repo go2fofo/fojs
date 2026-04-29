@@ -1,0 +1,81 @@
+/*
+ * @Author: fofo
+ * @Date: 2026-04-29 10:23:14
+ * @LastEditTime: 2026-04-29 13:21:16
+ * @LastEditors: fofo
+ * @Description: 
+ * @FilePath: /fojs/example/src/App.fo
+ */
+// @ts-nocheck
+export const css = `
+.fo-container {
+  padding: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.nav {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 0 20px;
+}
+
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+}
+`;
+
+import ScopedCssDemo from './demos/ScopedCssDemo.fo'
+import AttrsDemo from './demos/AttrsDemo.fo'
+import ReactiveDestructureDemo from './demos/ReactiveDestructureDemo.fo'
+import StoreDemo from './demos/StoreDemo.fo'
+import ModelSugarDemo from './demos/ModelSugarDemo.fo'
+import LifecycleDemo from './demos/LifecycleDemo.fo'
+import FoUiDemo from './demos/FoUiDemo.fo'
+
+export default () => {
+  const current = ref('介绍')
+
+  const items = [
+    { key: '介绍', comp: null },
+    { key: 'Scoped CSS', comp: ScopedCssDemo },
+    { key: '属性透传', comp: AttrsDemo },
+    { key: '响应式解构', comp: ReactiveDestructureDemo },
+    { key: '全局状态', comp: StoreDemo },
+    { key: '语法糖 $value', comp: ModelSugarDemo },
+    { key: '生命周期', comp: LifecycleDemo },
+    { key: 'fo-ui', comp: FoUiDemo },
+  ]
+
+  const currentComp = computed(() => items.find(i => i.key === current.value)?.comp || null)
+
+  return (
+    <div class="fo-container">
+      <h1>fojs 示例</h1>
+      <p>下面这些按钮会切换不同的能力演示。</p>
+
+      <div class="nav">
+        {items.map((i) => (
+          <button onClick={() => (current.value = i.key)}>{i.key}</button>
+        ))}
+      </div>
+
+      {current.value === '介绍' ? (
+        <div class="card">
+          <h2>介绍</h2>
+          <p>fojs 是一个使用 `.fo` 文件的前端 DSL：用 TSX 写 UI，用 Vue Composition API 写逻辑。</p>
+          <p>提示：开发时建议使用 Node 20.19+（fnm 管理）。</p>
+          <p>你可以尝试修改任意 `.fo` 文件，观察是否能做到组件级热更新。</p>
+        </div>
+      ) : (
+        <div class="card">{currentComp.value ? h(currentComp.value) : null}</div>
+      )}
+    </div>
+  );
+};

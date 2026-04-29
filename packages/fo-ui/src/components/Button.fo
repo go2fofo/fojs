@@ -1,0 +1,80 @@
+// @ts-nocheck
+export const css = `
+.fo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.fo-btn--md {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+
+.fo-btn--sm {
+  height: 30px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+.fo-btn--primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.fo-btn--primary:hover {
+  background: #1d4ed8;
+}
+
+.fo-btn--secondary {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #e2e8f0;
+}
+
+.fo-btn--secondary:hover {
+  background: #f1f5f9;
+}
+
+.fo-btn--danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.fo-btn--danger:hover {
+  background: #b91c1c;
+}
+
+.fo-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+`
+
+export default (props, ctx) => {
+  const variant = computed(() => props?.variant || 'primary')
+  const size = computed(() => props?.size || 'md')
+  const disabled = computed(() => !!props?.disabled)
+
+  const cls = computed(() => [
+    'fo-btn',
+    `fo-btn--${size.value}`,
+    `fo-btn--${variant.value}`,
+  ])
+
+  const slotNodes = computed(() => ctx?.slots?.default ? ctx.slots.default() : null)
+
+  return (
+    <button class={cls.value} disabled={disabled.value} type={props?.type || 'button'}>
+      {props?.icon ? <span>{props.icon}</span> : null}
+      {slotNodes.value ? slotNodes.value : (props?.label ? <span>{props.label}</span> : null)}
+    </button>
+  )
+}

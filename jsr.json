@@ -1,0 +1,26 @@
+{
+  "name": "@fo4/fojs",
+  "version": "1.0.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publish": {
+    "exclude": [
+      "docs",
+      "playground",
+      "example",
+      "dist",
+      "shims-fo.d.ts",
+      "**/dist/**",
+      "node_modules",
+      "fojs.md",
+      "fojs.ai.spec.md"
+    ]
+  },
+  "imports": {
+    "@babel/types": "npm:@babel/types@^7",
+    "@babel/core": "npm:@babel/core@^7",
+    "@vue/babel-plugin-jsx": "npm:@vue/babel-plugin-jsx@^1"
+  }
+}

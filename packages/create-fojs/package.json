@@ -1,0 +1,10 @@
+{
+  "name": "create-fojs",
+  "version": "0.1.0",
+  "description": "创建 fojs 项目脚手架（支持可选集成 Tailwind CSS / Vue Router）",
+  "type": "module",
+  "bin": {
+    "create-fojs": "bin/create-fojs.mjs"
+  },
+  "license": "MIT"
+}

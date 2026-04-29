@@ -1,0 +1,79 @@
+/**
+ * 说明：用于关闭对 `.fo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
+ */
+// @ts-nocheck
+export const css = `
+.wrap {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+button {
+  padding: 8px 12px;
+}
+`
+
+/**
+ * 子组件：演示 `const { count } = props` 的“响应式解构”
+ */
+const 子组件 = (props) => {
+  const { count } = props
+  return (
+    <div>
+      <h3>子组件</h3>
+      <p>这里写了 `const { count } = props`，编译后会包装为“可写 ref”，从而支持跨组件双向绑定。</p>
+      <p>count：{count.value}</p>
+      <button onClick={() => (count.value = count.value - 1)}>子组件减 1</button>
+    </div>
+  )
+}
+
+/**
+ * 子组件：对象类型也支持双向绑定（深层字段修改会触发 onUpdate:profile）
+ */
+const 对象子组件 = (props) => {
+  const { profile } = props
+  const 改名 = () => (profile.value.name = profile.value.name + '!')
+  const 加一岁 = () => (profile.value.age = profile.value.age + 1)
+  return (
+    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #e5e7eb;">
+      <h3>对象子组件</h3>
+      <p>profile.name：{profile.value.name}</p>
+      <p>profile.age：{profile.value.age}</p>
+      <button onClick={改名}>子组件改名</button>
+      <button style="margin-left: 8px;" onClick={加一岁}>子组件加一岁</button>
+    </div>
+  )
+}
+
+/**
+ * 演示：父组件更新 count 后，子组件中的解构变量仍然保持响应式更新
+ */
+export default () => {
+  const state = reactive({ count: 1, profile: { name: '小明', age: 18 } })
+  const inc = () => state.count++
+  const 父组件改名 = () => (state.profile.name = state.profile.name + '（父）')
+
+  return (
+    <div class="wrap">
+      <h2>响应式解构</h2>
+      <p>父组件 count：{state.count}</p>
+      <button onClick={inc}>父组件加 1</button>
+      <div style="margin-top: 12px;">
+        <子组件
+          count={state.count}
+          onUpdate:count={(v) => (state.count = v)}
+        />
+        <div style="margin-top: 12px;">
+          <p>父组件 profile：{state.profile.name} / {state.profile.age}</p>
+          <button onClick={父组件改名}>父组件改名</button>
+        </div>
+        <对象子组件
+          profile={state.profile}
+          onUpdate:profile={(v) => (state.profile = v)}
+        />
+      </div>
+    </div>
+  )
+}

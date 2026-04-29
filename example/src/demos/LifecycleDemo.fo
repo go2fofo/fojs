@@ -1,0 +1,102 @@
+/**
+ * 说明：用于关闭对 `.fo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
+ */
+// @ts-nocheck
+export const css = `
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.logs {
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.log {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 2px 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+input {
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+}
+`
+
+const now = () => new Date().toLocaleTimeString()
+
+const 生命周期子组件 = (props) => {
+  const logs = props.logs
+  const count = ref(0)
+  const text = ref('hello')
+
+  const push = (msg) => logs.value.unshift(`[${now()}] ${msg}`)
+
+  onMounted(() => push('子组件 onMounted：已挂载'))
+  onUpdated(() => push(`子组件 onUpdated：已更新（count=${count.value}, text=${text.value}）`))
+  onUnmounted(() => push('子组件 onUnmounted：已卸载'))
+
+  watch(count, (n, o) => push(`子组件 watch(count)：${o} -> ${n}`))
+  watch(text, (n, o) => push(`子组件 watch(text)：${o} -> ${n}`))
+
+  return (
+    <div>
+      <h3>子组件</h3>
+      <div class="row">
+        <button onClick={() => (count.value = count.value + 1)}>count + 1</button>
+        <span>count：{count.value}</span>
+      </div>
+      <div class="row" style="margin-top: 8px;">
+        <input $value={text.value} placeholder="修改文本触发更新" />
+        <span>text：{text.value}</span>
+      </div>
+    </div>
+  )
+}
+
+export default () => {
+  const show = ref(true)
+  const logs = ref([])
+
+  const push = (msg) => logs.value.unshift(`[${now()}] ${msg}`)
+
+  const toggle = () => {
+    show.value = !show.value
+    push(show.value ? '父组件：显示子组件' : '父组件：隐藏子组件（将触发子组件卸载）')
+  }
+
+  const clear = () => (logs.value = [])
+
+  return (
+    <div>
+      <h2>生命周期</h2>
+      <p>这个案例演示 onMounted / onUpdated / onUnmounted，以及 watch 的触发顺序。</p>
+      <div class="row">
+        <button onClick={toggle}>{show.value ? '卸载子组件' : '挂载子组件'}</button>
+        <button onClick={clear}>清空日志</button>
+      </div>
+      <div style="margin-top: 12px;">
+        {show.value ? <生命周期子组件 logs={logs} /> : <div>子组件已卸载</div>}
+      </div>
+      <div class="logs">
+        {logs.value.length === 0 ? (
+          <div class="log">暂无日志，点击按钮开始。</div>
+        ) : (
+          logs.value.map((x) => <div class="log">{x}</div>)
+        )}
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,78 @@
+/**
+ * 说明：用于关闭对 `.fo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
+ */
+// @ts-nocheck
+export const css = `
+.wrap {
+  display: grid;
+  gap: 12px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.sp {
+  height: 10px;
+}
+`
+
+import { FoButton, FoCard, FoInput, FoModal, FoSwitch, FoToastHost, useToast } from 'fo-ui'
+
+/**
+ * 演示：fo-ui 组件库的基础组件用法（按钮/输入框/开关/弹窗/消息）
+ */
+export default () => {
+  const toast = useToast()
+  const name = ref('fojs')
+  const open = ref(false)
+  const on = ref(true)
+
+  return (
+    <div class="wrap">
+      <FoToastHost />
+
+      <FoCard title="按钮">
+        <div class="row">
+          <FoButton label="主按钮" variant="primary" onClick={() => toast.success('点击了主按钮')} />
+          <FoButton label="次按钮" variant="secondary" onClick={() => toast.info('点击了次按钮')} />
+          <FoButton label="危险按钮" variant="danger" onClick={() => toast.danger('点击了危险按钮')} />
+          <FoButton variant="secondary" onClick={() => toast.info('这是 slot 渲染')}>
+            这是 slot
+          </FoButton>
+        </div>
+      </FoCard>
+
+      <FoCard title="输入框 + 语法糖">
+        <div class="row">
+          <FoInput $value={name.value} placeholder="请输入名称" />
+          <span>当前值：{name.value}</span>
+        </div>
+      </FoCard>
+
+      <FoCard title="开关">
+        <div class="row">
+          <FoSwitch $value={on.value} label={on.value ? '开' : '关'} />
+          <FoButton label="打开弹窗" variant="primary" onClick={() => (open.value = true)} />
+        </div>
+      </FoCard>
+
+      <FoModal
+        open={open.value}
+        onUpdate:open={(v) => (open.value = v)}
+        title="这是一个弹窗"
+        maskClosable
+      >
+        <div>
+          <p>你可以尝试在不刷新页面的情况下热更新这个组件。</p>
+          <p>当前 name：{name.value}</p>
+          <div class="sp" />
+          <FoButton label="关闭" variant="secondary" onClick={() => (open.value = false)} />
+        </div>
+      </FoModal>
+    </div>
+  )
+}

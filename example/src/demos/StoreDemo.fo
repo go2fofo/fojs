@@ -1,0 +1,70 @@
+/**
+ * 说明：用于关闭对 `.fo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
+ */
+// @ts-nocheck
+export const css = `
+.wrap {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 8px 12px;
+}
+`
+
+/**
+ * 组件 A：对共享状态进行加 1
+ */
+const 组件A = () => {
+  const store = useFoStore('global-demo', () => ({ count: 0 }))
+  const inc = () => store.count++
+  return (
+    <div>
+      <h3>组件 A</h3>
+      <div class="row">
+        <span>count：{store.count}</span>
+        <button onClick={inc}>A 加 1</button>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * 组件 B：对共享状态进行减 1
+ */
+const 组件B = () => {
+  const store = useFoStore('global-demo', () => ({ count: 0 }))
+  const dec = () => store.count--
+  return (
+    <div>
+      <h3>组件 B</h3>
+      <div class="row">
+        <span>count：{store.count}</span>
+        <button onClick={dec}>B 减 1</button>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * 演示：两个组件通过同一个 key 共享一份全局状态
+ */
+export default () => {
+  return (
+    <div class="wrap">
+      <h2>内置全局状态</h2>
+      <p>同一个 key（这里是 global-demo）会跨组件共享同一份状态。</p>
+      <组件A />
+      <组件B />
+    </div>
+  )
+}

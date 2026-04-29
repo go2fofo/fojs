@@ -1,0 +1,106 @@
+// @ts-nocheck
+export const css = `
+.fo-toast-host {
+  position: fixed;
+  right: 16px;
+  top: 16px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fo-toast {
+  min-width: 260px;
+  max-width: 360px;
+  background: #0f172a;
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.fo-toast__title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.fo-toast__msg {
+  opacity: 0.9;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.fo-toast--success {
+  background: #064e3b;
+}
+
+.fo-toast--warning {
+  background: #7c2d12;
+}
+
+.fo-toast--danger {
+  background: #7f1d1d;
+}
+`
+
+const STORE_KEY = 'fo-ui:toast'
+
+export const useToast = () => {
+  const store = useFoStore(STORE_KEY, () => ({ list: [] }))
+
+  const push = (payload) => {
+    const id = Math.random().toString(36).slice(2)
+    const item = {
+      id,
+      type: payload?.type || 'info',
+      title: payload?.title || '',
+      message: payload?.message || '',
+      duration: typeof payload?.duration === 'number' ? payload.duration : 2500,
+    }
+    store.list = [...store.list, item]
+    if (item.duration > 0) {
+      setTimeout(() => {
+        store.list = store.list.filter(x => x.id !== id)
+      }, item.duration)
+    }
+    return id
+  }
+
+  const remove = (id) => {
+    store.list = store.list.filter(x => x.id !== id)
+  }
+
+  return {
+    push,
+    remove,
+    info: (message, opt) => push({ ...opt, type: 'info', message }),
+    success: (message, opt) => push({ ...opt, type: 'success', message }),
+    warning: (message, opt) => push({ ...opt, type: 'warning', message }),
+    danger: (message, opt) => push({ ...opt, type: 'danger', message }),
+  }
+}
+
+export default () => {
+  const store = useFoStore(STORE_KEY, () => ({ list: [] }))
+
+  const clsOf = (t) => {
+    if (t === 'success') return 'fo-toast fo-toast--success'
+    if (t === 'warning') return 'fo-toast fo-toast--warning'
+    if (t === 'danger') return 'fo-toast fo-toast--danger'
+    return 'fo-toast'
+  }
+
+  return (
+    <div class="fo-toast-host">
+      {store.list.map((it) => (
+        <div class={clsOf(it.type)}>
+          {it.title ? <div class="fo-toast__title">{it.title}</div> : null}
+          <div class="fo-toast__msg">{it.message}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+

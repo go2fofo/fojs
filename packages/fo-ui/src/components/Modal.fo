@@ -1,0 +1,90 @@
+// @ts-nocheck
+export const css = `
+.fo-modal__mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 9999;
+}
+
+.fo-modal__panel {
+  width: min(520px, 100%);
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.fo-modal__hd {
+  padding: 12px 14px;
+  font-weight: 600;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fo-modal__bd {
+  padding: 14px;
+}
+
+.fo-modal__ft {
+  padding: 12px 14px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.fo-modal__x {
+  cursor: pointer;
+  user-select: none;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.fo-modal__x:hover {
+  background: #f1f5f9;
+}
+`
+
+export default (props, ctx) => {
+  const open = computed(() => !!props?.open)
+  const title = computed(() => props?.title || '提示')
+
+  const close = () => {
+    if (props && typeof props['onUpdate:open'] === 'function') {
+      props['onUpdate:open'](false)
+    }
+    if (props && typeof props.onClose === 'function') {
+      props.onClose()
+    }
+  }
+
+  const onMaskClick = (e) => {
+    if (!props?.maskClosable) return
+    if (e?.target === e?.currentTarget) close()
+  }
+
+  const body = computed(() => ctx?.slots?.default ? ctx.slots.default() : null)
+  const footer = computed(() => ctx?.slots?.footer ? ctx.slots.footer() : null)
+
+  return (
+    open.value ? (
+      <div class="fo-modal__mask" onClick={onMaskClick}>
+        <div class="fo-modal__panel">
+          <div class="fo-modal__hd">
+            <span>{title.value}</span>
+            <span class="fo-modal__x" onClick={close}>×</span>
+          </div>
+          <div class="fo-modal__bd">{body.value}</div>
+          {footer.value ? <div class="fo-modal__ft">{footer.value}</div> : null}
+        </div>
+      </div>
+    ) : null
+  )
+}

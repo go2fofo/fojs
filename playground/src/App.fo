@@ -1,0 +1,110 @@
+// @ts-nocheck
+export const css = `
+.wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 70vh;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 12px;
+  padding: 12px;
+}
+
+.preview {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.err {
+  color: #b91c1c;
+  white-space: pre-wrap;
+}
+`;
+
+const 默认代码 = `export const css = \`
+.box {
+  padding: 16px;
+  border: 1px dashed #94a3b8;
+  border-radius: 10px;
+}
+\`
+
+export default () => {
+  const count = ref(0)
+  const inc = () => count.value++
+
+  return (
+    <div class="box">
+      <h2>在线预览</h2>
+      <p>计数：{count.value}</p>
+      <button onClick={inc}>加 1</button>
+    </div>
+  )
+}
+`;
+
+export default () => {
+  const code = ref(默认代码)
+  const err = ref('')
+  const Comp = ref(null)
+  const lastUrl = ref('')
+
+  const compileNow = async () => {
+    err.value = ''
+    try {
+      const res = await fetch('/__fojs_compile', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ code: code.value }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        err.value = data?.message || '编译失败'
+        return
+      }
+
+      const js = await res.text()
+      const blob = new Blob([js], { type: 'text/javascript' })
+      const url = URL.createObjectURL(blob)
+      if (lastUrl.value) URL.revokeObjectURL(lastUrl.value)
+      lastUrl.value = url
+
+      const mod = await import(/* @vite-ignore */ url)
+      Comp.value = mod.default
+    } catch (e) {
+      err.value = String(e?.message || e)
+    }
+  }
+
+  onMounted(() => {
+    compileNow()
+  })
+
+  watch(
+    () => code.value,
+    () => {
+      compileNow()
+    },
+  )
+
+  return (
+    <div class="wrap">
+      <div>
+        <h1>fojs Playground</h1>
+        <textarea value={code.value} onInput={(e) => (code.value = e.target.value)} />
+        {err.value ? <div class="err">{err.value}</div> : null}
+      </div>
+      <div class="preview">
+        <h2>预览区</h2>
+        {Comp.value ? h(Comp.value) : <div>等待编译...</div>}
+      </div>
+    </div>
+  )
+}

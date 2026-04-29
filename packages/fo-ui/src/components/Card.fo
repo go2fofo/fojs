@@ -1,0 +1,30 @@
+// @ts-nocheck
+export const css = `
+.fo-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.fo-card__hd {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  font-weight: 600;
+}
+
+.fo-card__bd {
+  padding: 14px;
+}
+`
+
+export default (props, ctx) => {
+  const title = computed(() => props?.title || '')
+  const body = computed(() => ctx?.slots?.default ? ctx.slots.default() : null)
+
+  return (
+    <div class="fo-card">
+      {title.value ? <div class="fo-card__hd">{title.value}</div> : null}
+      <div class="fo-card__bd">{body.value}</div>
+    </div>
+  )
+}
