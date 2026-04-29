@@ -6,5 +6,9 @@
   "bin": {
     "create-fojs": "bin/create-fojs.mjs"
   },
+  "files": [
+    "bin",
+    "templates"
+  ],
   "license": "MIT"
 }

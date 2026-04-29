@@ -204,5 +204,14 @@ export default () => {
 脚手架支持可选集成 Tailwind CSS / Vue Router：
 
 ```bash
-node packages/create-fojs/bin/create-fojs.mjs my-app --tailwind --router
+npx create-fojs@latest my-app --tailwind --router
+```
+
+创建完成后：
+
+```bash
+cd my-app
+fnm use
+npm i
+npm run dev
 ```
