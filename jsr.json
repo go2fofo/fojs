@@ -1,6 +1,6 @@
 {
     "name": "@fo4/fojs",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "license": "MIT",
     "exports": {
         ".": "./src/index.ts",
@@ -16,7 +16,8 @@
             "**/dist/**",
             "node_modules",
             "fojs.md",
-            "fojs.ai.spec.md"
+            "fojs.ai.spec.md",
+            "!packages/create-fojs/templates/**"
         ]
     },
     "imports": {
