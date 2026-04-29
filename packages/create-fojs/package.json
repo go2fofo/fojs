@@ -1,7 +1,7 @@
 {
   "name": "create-fojs",
   "version": "0.1.0",
-  "description": "创建 fojs 项目脚手架（支持可选集成 Tailwind CSS / Vue Router）",
+  "description": "Scaffold a new fojs project",
   "type": "module",
   "bin": {
     "create-fojs": "bin/create-fojs.mjs"
@@ -10,5 +10,10 @@
     "bin",
     "templates"
   ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["fojs", "create-app", "5ho7", "vite-plugin"],
+  "author": "whq",
   "license": "MIT"
 }

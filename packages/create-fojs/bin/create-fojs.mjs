@@ -2,7 +2,10 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /**
  * 输出使用说明
  */
@@ -76,8 +79,17 @@ async function main() {
   }
 
   const targetDir = path.resolve(process.cwd(), dir);
-  const pkgRoot = path.resolve(import.meta.dirname, '..');
+  
+  // 兼容 Deno 远程运行的路径获取方式
+  const currentFilePath = fileURLToPath(import.meta.url);
+  const currentDir = path.dirname(currentFilePath);
+  
+  // 指向 packages/create-fojs 目录
+  const pkgRoot = path.resolve(currentDir, '..');
   const templateRoot = path.join(pkgRoot, 'templates', 'base');
+
+  
+
 
   await copyDir(templateRoot, targetDir);
 
