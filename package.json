@@ -1,6 +1,6 @@
 {
   "name": "@fo4/vfojs",
-  "version": "1.0.2",
+  "version": "1.0.1",
   "description": "An innovative frontend DSL framework (React shell, Vue soul)",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

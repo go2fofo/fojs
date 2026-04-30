@@ -282,7 +282,7 @@ import MyFoCard from './components/Card.vfo'
 npx create-vfojs@latest my-app
 ```
 
-创建完成后，你可以立即体验 **5HO7** 品牌带来的丝滑开发感：
+创建完成后，你可以立即体验。
 
 ```bash
 cd my-app
