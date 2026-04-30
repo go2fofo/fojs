@@ -58,7 +58,7 @@ export default () => {
   const compileNow = async () => {
     err.value = ''
     try {
-      const res = await fetch('/__fojs_compile', {
+      const res = await fetch('/__vfojs_compile', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ code: code.value }),

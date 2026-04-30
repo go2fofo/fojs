@@ -12,10 +12,10 @@ import * as t from '@babel/types';
  * - 支持 Scoped CSS：提取 `export const css = \`...\`` 并注入到页面，同时给根节点挂载作用域类名
  * - 支持属性透传：将 attrs 合并到根节点，确保 class/style/id 等行为稳定可控
  */
-export default function babelPluginFojs(): PluginObj {
-  const FOJS_MAIN = '__fojs_main';
-  const FOJS_SCOPE_CLASS = '__fojs_scope_class';
-  const FOJS_ATTRS = '__fojs_attrs';
+export default function babelPluginVfojs(): PluginObj {
+  const VFOJS_MAIN = '__vfojs_main';
+  const VFOJS_SCOPE_CLASS = '__vfojs_scope_class';
+  const VFOJS_ATTRS = '__vfojs_attrs';
 
   /**
    * 生成一个稳定的短哈希（用于作用域类名与 HMR id 的稳定性）
@@ -33,8 +33,8 @@ export default function babelPluginFojs(): PluginObj {
    * 根据文件路径生成 Scoped CSS 的作用域类名
    */
   const getScopeClassByFilename = (filename: string | undefined) => {
-    const base = filename || 'fojs';
-    return `fo-s-${hash32(base)}`;
+    const base = filename || 'vfojs';
+    return `vfo-s-${hash32(base)}`;
   };
 
   /**
@@ -73,7 +73,7 @@ export default function babelPluginFojs(): PluginObj {
         if (!t.isVariableDeclaration(s)) continue;
         for (const d of s.declarations) {
           if (!t.isVariableDeclarator(d)) continue;
-          if (t.isIdentifier(d.id) && d.id.name === FOJS_ATTRS) return i;
+          if (t.isIdentifier(d.id) && d.id.name === VFOJS_ATTRS) return i;
         }
       }
       return -1;
@@ -84,7 +84,7 @@ export default function babelPluginFojs(): PluginObj {
       stmts.unshift(
         t.variableDeclaration('const', [
           t.variableDeclarator(
-            t.identifier(FOJS_ATTRS),
+            t.identifier(VFOJS_ATTRS),
             t.callExpression(t.identifier('useAttrs'), []),
           ),
         ]),
@@ -114,7 +114,7 @@ export default function babelPluginFojs(): PluginObj {
     if (!hasBinding('props')) {
       inserts.push(
         t.variableDeclaration('const', [
-          t.variableDeclarator(t.identifier('props'), t.identifier(FOJS_ATTRS)),
+          t.variableDeclarator(t.identifier('props'), t.identifier(VFOJS_ATTRS)),
         ]),
       );
     }
@@ -123,7 +123,7 @@ export default function babelPluginFojs(): PluginObj {
     if (rawProps) {
       if (t.isIdentifier(rawProps)) {
         const rawName = rawProps.name;
-        if (rawName !== 'props' && rawName !== FOJS_ATTRS && !hasBinding(rawName)) {
+        if (rawName !== 'props' && rawName !== VFOJS_ATTRS && !hasBinding(rawName)) {
           inserts.push(
             t.variableDeclaration('const', [
               t.variableDeclarator(t.identifier(rawName), t.identifier('props')),
@@ -148,7 +148,7 @@ export default function babelPluginFojs(): PluginObj {
               t.identifier('ctx'),
               t.objectExpression([
                 t.objectProperty(t.identifier('slots'), t.callExpression(t.identifier('useSlots'), [])),
-                t.objectProperty(t.identifier('attrs'), t.identifier(FOJS_ATTRS)),
+                t.objectProperty(t.identifier('attrs'), t.identifier(VFOJS_ATTRS)),
               ]),
             ),
           ]),
@@ -157,7 +157,7 @@ export default function babelPluginFojs(): PluginObj {
 
       if (t.isIdentifier(rawCtx)) {
         const rawName = rawCtx.name;
-        if (rawName !== 'ctx' && rawName !== FOJS_ATTRS && !hasBinding(rawName)) {
+        if (rawName !== 'ctx' && rawName !== VFOJS_ATTRS && !hasBinding(rawName)) {
           inserts.push(
             t.variableDeclaration('const', [
               t.variableDeclarator(t.identifier(rawName), t.identifier('ctx')),
@@ -191,15 +191,15 @@ export default function babelPluginFojs(): PluginObj {
         let vnodeExpr: t.Expression = arg;
 
         if (scopedCssText) {
-          vnodeExpr = t.callExpression(t.identifier('__fojs__attachScope'), [
+          vnodeExpr = t.callExpression(t.identifier('__vfojs__attachScope'), [
             vnodeExpr,
-            t.identifier(FOJS_SCOPE_CLASS),
+            t.identifier(VFOJS_SCOPE_CLASS),
           ]);
         }
 
-        vnodeExpr = t.callExpression(t.identifier('__fojs__applyAttrs'), [
+        vnodeExpr = t.callExpression(t.identifier('__vfojs__applyAttrs'), [
           vnodeExpr,
-          t.identifier(FOJS_ATTRS),
+          t.identifier(VFOJS_ATTRS),
         ]);
 
         returnPath.node.argument = t.arrowFunctionExpression([], vnodeExpr);
@@ -208,7 +208,7 @@ export default function babelPluginFojs(): PluginObj {
   };
 
   return {
-    name: 'babel-plugin-fojs',
+    name: 'babel-plugin-vfojs',
     visitor: {
       Program: {
         enter(path, state: any) {
@@ -233,20 +233,20 @@ export default function babelPluginFojs(): PluginObj {
           const scopeClass = scopeClassName;
 
           const scopeDecl = t.variableDeclaration('const', [
-            t.variableDeclarator(t.identifier(FOJS_SCOPE_CLASS), t.stringLiteral(scopeClass)),
+            t.variableDeclarator(t.identifier(VFOJS_SCOPE_CLASS), t.stringLiteral(scopeClass)),
           ]);
 
           const cssDecl = t.variableDeclaration('const', [
             t.variableDeclarator(
-              t.identifier('__fojs_scoped_css'),
+              t.identifier('__vfojs_scoped_css'),
               t.stringLiteral(cssText),
             ),
           ]);
 
           const injectCall = t.expressionStatement(
-            t.callExpression(t.identifier('__fojs__injectStyle'), [
-              t.identifier(FOJS_SCOPE_CLASS),
-              t.identifier('__fojs_scoped_css'),
+            t.callExpression(t.identifier('__vfojs__injectStyle'), [
+              t.identifier(VFOJS_SCOPE_CLASS),
+              t.identifier('__vfojs_scoped_css'),
             ]),
           );
 
@@ -300,7 +300,7 @@ export default function babelPluginFojs(): PluginObj {
                 t.variableDeclaration('const', [
                   t.variableDeclarator(
                     t.identifier(value.name),
-                    t.callExpression(t.identifier('__fojs__toModelRef'), [
+                    t.callExpression(t.identifier('__vfojs__toModelRef'), [
                       t.identifier('props'),
                       t.stringLiteral(key.name),
                     ]),
@@ -316,7 +316,7 @@ export default function babelPluginFojs(): PluginObj {
                 t.variableDeclaration('const', [
                   t.variableDeclarator(
                     t.identifier(value.left.name),
-                    t.callExpression(t.identifier('__fojs__toModelRef'), [
+                    t.callExpression(t.identifier('__vfojs__toModelRef'), [
                       t.identifier('props'),
                       t.stringLiteral(key.name),
                     ]),
@@ -475,7 +475,7 @@ export default function babelPluginFojs(): PluginObj {
       ExportDefaultDeclaration(path) {
         const declaration = path.node.declaration;
 
-        if (t.isIdentifier(declaration) && declaration.name === FOJS_MAIN) {
+        if (t.isIdentifier(declaration) && declaration.name === VFOJS_MAIN) {
           return;
         }
 
@@ -502,14 +502,14 @@ export default function babelPluginFojs(): PluginObj {
         if (t.isIdentifier(declaration)) {
           const inserted = path.insertBefore(
             t.variableDeclaration('const', [
-              t.variableDeclarator(t.identifier(FOJS_MAIN), declaration),
+              t.variableDeclarator(t.identifier(VFOJS_MAIN), declaration),
             ]),
           );
           const declPath = Array.isArray(inserted) ? inserted[0] : inserted;
           if (declPath && (declPath as any).isVariableDeclaration?.()) {
             path.scope.registerDeclaration(declPath as any);
           }
-          path.node.declaration = t.identifier(FOJS_MAIN);
+          path.node.declaration = t.identifier(VFOJS_MAIN);
           return;
         }
 
@@ -537,14 +537,14 @@ export default function babelPluginFojs(): PluginObj {
 
           const inserted = path.insertBefore(
             t.variableDeclaration('const', [
-              t.variableDeclarator(t.identifier(FOJS_MAIN), defineComponentCall),
+              t.variableDeclarator(t.identifier(VFOJS_MAIN), defineComponentCall),
             ]),
           );
           const declPath = Array.isArray(inserted) ? inserted[0] : inserted;
           if (declPath && (declPath as any).isVariableDeclaration?.()) {
             path.scope.registerDeclaration(declPath as any);
           }
-          path.node.declaration = t.identifier(FOJS_MAIN);
+          path.node.declaration = t.identifier(VFOJS_MAIN);
           return;
         }
       }

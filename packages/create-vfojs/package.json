@@ -1,10 +1,10 @@
 {
-  "name": "create-fojs",
+  "name": "create-vfojs",
   "version": "0.1.1",
-  "description": "Scaffold a new fojs project",
+  "description": "Scaffold a new vfojs project",
   "type": "module",
   "bin": {
-    "create-fojs": "bin/create-fojs.mjs"
+    "create-vfojs": "bin/create-vfojs.mjs"
   },
   "files": [
     "bin",
@@ -13,7 +13,7 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "keywords": ["fojs", "create-app", "5ho7", "vite-plugin"],
+  "keywords": ["vfojs", "create-app", "5ho7", "vite-plugin"],
   "author": "fofo",
   "license": "MIT"
 }

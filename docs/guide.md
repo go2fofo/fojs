@@ -1,8 +1,8 @@
 # 指南
 
-## `.fo` 文件写法
+## `.vfo` 文件写法
 
-`.fo` 的默认导出是一个函数，它会被自动包装为 Vue 组件的 `setup`。
+`.vfo` 的默认导出是一个函数，它会被自动包装为 Vue 组件的 `setup`。
 
 ```tsx
 export default () => {
@@ -20,7 +20,7 @@ export default () => {
 
 ## Scoped CSS
 
-在 `.fo` 文件中声明 `export const css = \`...\``，框架会：
+在 `.vfo` 文件中声明 `export const css = \`...\``，框架会：
 
 - 自动把 CSS 注入到页面
 - 自动给根节点附加一个作用域类名，避免样式污染
@@ -60,7 +60,7 @@ export default () => {
 
 ## 属性透传（class/style/id）
 
-fojs 会将传入组件的 attrs 合并到根节点，确保 `class/style/id` 等像 Vue 一样可用。
+vfojs 会将传入组件的 attrs 合并到根节点，确保 `class/style/id` 等像 Vue 一样可用。
 
 完整示例：
 
@@ -86,7 +86,7 @@ export default () => {
 
 ## 响应式解构
 
-你可以在 `.fo` 里写：
+你可以在 `.vfo` 里写：
 
 ```ts
 export default (props) => {
@@ -141,7 +141,7 @@ export default () => {
 
 ```tsx
 export default () => {
-  const state = useFoStore('model-demo', () => ({ name: 'fojs' }))
+  const state = useFoStore('model-demo', () => ({ name: 'vfojs' }))
 
   return (
     <div class="wrap">
@@ -158,7 +158,7 @@ export default () => {
 写法：
 
 ```ts
-const store = useFoStore('demo', () => ({ name: 'fojs' }))
+const store = useFoStore('demo', () => ({ name: 'vfojs' }))
 ```
 
 同一个 key 在多个组件中拿到的是同一份 `reactive` 状态。
@@ -199,12 +199,12 @@ export default () => {
 }
 ```
 
-## CLI（create-fojs）
+## CLI（create-vfojs）
 
 脚手架支持可选集成 Tailwind CSS / Vue Router：
 
 ```bash
-npx create-fojs@latest my-app --tailwind --router
+npx create-vfojs@latest my-app --tailwind --router
 ```
 
 创建完成后：

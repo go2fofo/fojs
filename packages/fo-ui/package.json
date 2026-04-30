@@ -1,7 +1,7 @@
 {
   "name": "fo-ui",
   "version": "0.1.0",
-  "description": "基于 fojs 的 UI 组件库",
+  "description": "基于 vfojs 的 UI 组件库",
   "type": "module",
   "exports": {
     ".": {
@@ -10,12 +10,12 @@
     }
   },
   "peerDependencies": {
-    "fojs": "^1.0.0",
+    "@fo4/vfojs": "^1.0.0",
     "vue": "^3.4.0",
     "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0"
   },
   "keywords": [
-    "fojs",
+    "vfojs",
     "ui",
     "vue",
     "tsx",
@@ -23,4 +23,3 @@
   ],
   "license": "MIT"
 }
-

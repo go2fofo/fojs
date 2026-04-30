@@ -1,6 +1,6 @@
 # fo-ui
 
-fo-ui 是基于 fojs 的 UI 组件库。
+fo-ui 是基于 vfojs 的 UI 组件库。
 
 ## 安装与启用
 
@@ -10,15 +10,15 @@ fo-ui 是基于 fojs 的 UI 组件库。
 npm i fo-ui
 ```
 
-2. 启用 fojs 插件（`.fo` 编译需要它）：
+2. 启用 vfojs 插件（`.vfo` 编译需要它）：
 
 ```ts
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import fojs from 'fojs'
+import vfojs from '@fo4/vfojs'
 
 export default defineConfig({
-  plugins: [vue(), fojs()],
+  plugins: [vue(), vfojs()],
   optimizeDeps: {
     exclude: ['fo-ui'],
   },
@@ -28,7 +28,7 @@ export default defineConfig({
 3. 引用类型：
 
 ```ts
-/// <reference types="fojs/shims-fo" />
+/// <reference types="@fo4/vfojs/shims-vfo" />
 ```
 
 ## 完整示例
@@ -38,7 +38,7 @@ import { FoButton, FoCard, FoInput, FoModal, FoSwitch, FoToastHost, useToast } f
 
 export default () => {
   const toast = useToast()
-  const name = ref('fojs')
+  const name = ref('vfojs')
   const open = ref(false)
   const on = ref(true)
 
@@ -81,10 +81,10 @@ export default () => {
   - 常用属性：`variant: 'primary' | 'secondary' | 'danger'`，`size: 'md' | 'sm'`，`disabled`
 - FoInput
   - 双向：`modelValue` + `onUpdate:modelValue`
-  - 在 fojs 中推荐：`<FoInput $value={state.xxx} />`
+  - 在 vfojs 中推荐：`<FoInput $value={state.xxx} />`
 - FoSwitch
   - 双向：`modelValue` + `onUpdate:modelValue`
-  - 在 fojs 中推荐：`<FoSwitch $value={state.xxx} />`
+  - 在 vfojs 中推荐：`<FoSwitch $value={state.xxx} />`
 - FoModal
   - 控制：`open` + `onUpdate:open`
   - 常用属性：`title`，`maskClosable`

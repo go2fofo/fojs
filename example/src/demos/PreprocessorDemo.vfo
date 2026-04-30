@@ -4,21 +4,21 @@
  * @LastEditTime: 2026-04-29 17:05:21
  * @LastEditors: fofo
  * @Description: 
- * @FilePath: /fojs/example/src/demos/PreprocessorDemo.fo
+ * @FilePath: /fojs/example/src/demos/PreprocessorDemo.vfo
  */
 /**
- * 说明：用于关闭对 `.fo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
+ * 说明：用于关闭对 `.vfo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
  */
 // @ts-nocheck
 
 import './app.less'
 
 export default () => {
-  const name = ref('fojs')
+  const name = ref('vfojs')
   return (
     <div class="wrap">
       <h2>样式预处理：import .less</h2>
-      <p>在 .fo 中写 import './xxx.less'（或 .scss），fojs 会在编译时把它内联编译为 CSS 再注入。</p>
+      <p>在 .vfo 中写 import './xxx.less'（或 .scss），vfojs 会在编译时把它内联编译为 CSS 再注入。</p>
       <div class="row">
         <div class="pill">当前值：{name.value}</div>
         <input $value={name.value} placeholder="修改看看样式是否生效" />

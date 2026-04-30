@@ -4,7 +4,7 @@
  * @LastEditTime: 2026-04-29 18:15:02
  * @LastEditors: fofo
  * @Description: 
- * @FilePath: /fojs/example/src/App.fo
+ * @FilePath: /fojs/example/src/App.vfo
  */
 // @ts-nocheck
 export const css = `
@@ -169,15 +169,15 @@ export const css = `
 }
 `;
 
-import ScopedCssDemo from './demos/ScopedCssDemo.fo'
-import AttrsDemo from './demos/AttrsDemo.fo'
-import ReactiveDestructureDemo from './demos/ReactiveDestructureDemo.fo'
-import StoreDemo from './demos/StoreDemo.fo'
-import ModelSugarDemo from './demos/ModelSugarDemo.fo'
-import LifecycleDemo from './demos/LifecycleDemo.fo'
-import PreprocessorDemo from './demos/PreprocessorDemo.fo'
-import DefinePropsEmitsDemo from './demos/DefinePropsEmitsDemo.fo'
-import FoUiDemo from './demos/FoUiDemo.fo'
+import ScopedCssDemo from './demos/ScopedCssDemo.vfo'
+import AttrsDemo from './demos/AttrsDemo.vfo'
+import ReactiveDestructureDemo from './demos/ReactiveDestructureDemo.vfo'
+import StoreDemo from './demos/StoreDemo.vfo'
+import ModelSugarDemo from './demos/ModelSugarDemo.vfo'
+import LifecycleDemo from './demos/LifecycleDemo.vfo'
+import PreprocessorDemo from './demos/PreprocessorDemo.vfo'
+import DefinePropsEmitsDemo from './demos/DefinePropsEmitsDemo.vfo'
+import FoUiDemo from './demos/FoUiDemo.vfo'
 
 export default () => {
   const current = ref('介绍')
@@ -202,7 +202,7 @@ export default () => {
       <div class="app">
         <div class="topbar">
           <div>
-            <h1 class="title">fojs 示例</h1>
+            <h1 class="title">vfojs 示例</h1>
             <p class="subtitle">一组可直接改代码验证的能力演示</p>
           </div>
           <div class="badge">
@@ -229,11 +229,11 @@ export default () => {
           <div class="main">
             <div class="panelHd">
               <h2 class="panelTitle">{current.value}</h2>
-              <p class="hint">点击左侧切换；修改 .fo 文件可观察热更新</p>
+              <p class="hint">点击左侧切换；修改 .vfo 文件可观察热更新</p>
             </div>
             {current.value === '介绍' ? (
               <div class="intro">
-                <p>fojs 是一个使用 `.fo` 文件的前端 DSL：用 TSX 写 UI，用 Vue Composition API 写逻辑。</p>
+                <p>vfojs 是一个使用 `.vfo` 文件的前端 DSL：用 TSX 写 UI，用 Vue Composition API 写逻辑。</p>
                 <p>示例项目包含：Scoped CSS、属性透传、响应式解构、$value 语法糖、全局状态、生命周期、fo-ui。</p>
               </div>
             ) : (

@@ -1,5 +1,5 @@
 /**
- * 说明：用于关闭对 `.fo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
+ * 说明：用于关闭对 `.vfo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
  */
 // @ts-nocheck
 
@@ -108,7 +108,7 @@ export default () => {
     <div class="wrap">
       <h2 style="color: #60a5fa; margin-bottom: 4px;">5HO7 架构演示</h2>
       <p class="muted">
-        基于 <strong>fojs</strong> 的 DSL 增强：React 渲染函数写法 + Vue 响应式内核。
+        基于 <strong>vfojs</strong> 的 DSL 增强：React 渲染函数写法 + Vue 响应式内核。
       </p>
 
       {/* 使用自定义子组件，并演示属性透传与事件监听 */}

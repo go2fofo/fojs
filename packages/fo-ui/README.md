@@ -1,6 +1,6 @@
 # fo-ui
 
-基于 fojs 的 UI 组件库。
+基于 vfojs 的 UI 组件库。
 
 ## 安装
 
@@ -10,17 +10,17 @@ npm i fo-ui
 
 ## 前置条件
 
-你的项目需要启用 fojs 的 Vite 插件，才能识别并编译 `.fo` 组件。
+你的项目需要启用 vfojs 的 Vite 插件，才能识别并编译 `.vfo` 组件。
 
-同时建议把 `fo-ui` 从 Vite 的依赖预构建里排除（否则开发模式下可能会被 esbuild 预构建，导致 `.fo` 依赖无法被正确处理）。
+同时建议把 `fo-ui` 从 Vite 的依赖预构建里排除（否则开发模式下可能会被 esbuild 预构建，导致 `.vfo` 依赖无法被正确处理）。
 
 ```ts
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import fojs from 'fojs'
+import vfojs from '@fo4/vfojs'
 
 export default defineConfig({
-  plugins: [vue(), fojs()],
+  plugins: [vue(), vfojs()],
   optimizeDeps: {
     exclude: ['fo-ui'],
   },
@@ -30,7 +30,7 @@ export default defineConfig({
 并在项目中引用类型：
 
 ```ts
-/// <reference types="fojs/shims-fo" />
+/// <reference types="@fo4/vfojs/shims-vfo" />
 ```
 
 ## 使用示例
@@ -40,7 +40,7 @@ import { FoButton, FoCard, FoInput, FoModal, FoSwitch, FoToastHost, useToast } f
 
 export default () => {
   const toast = useToast()
-  const name = ref('fojs')
+  const name = ref('vfojs')
   const open = ref(false)
   const on = ref(true)
 

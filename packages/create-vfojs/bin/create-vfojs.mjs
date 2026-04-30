@@ -11,7 +11,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  */
 function printHelp() {
   console.log(`
-create-fojs <项目目录> [选项]
+create-vfojs <项目目录> [选项]
 
 选项：
   --tailwind     集成 Tailwind CSS
@@ -129,22 +129,22 @@ async function main() {
 
     await writeText(
       path.join(targetDir, 'src/router/index.ts'),
-      `import { createRouter, createWebHistory } from 'vue-router'\n\nimport Home from '../pages/Home.fo'\n\nexport const router = createRouter({\n  history: createWebHistory(),\n  routes: [\n    {\n      path: '/',\n      component: Home,\n    },\n  ],\n})\n`,
+      `import { createRouter, createWebHistory } from 'vue-router'\n\nimport Home from '../pages/Home.vfo'\n\nexport const router = createRouter({\n  history: createWebHistory(),\n  routes: [\n    {\n      path: '/',\n      component: Home,\n    },\n  ],\n})\n`,
     );
 
     await writeText(
-      path.join(targetDir, 'src/pages/Home.fo'),
-      `export const css = \`\n.page {\n  padding: 24px;\n}\n\`\n\nexport default () => {\n  return (\n    <div class=\"page\">\n      <h2>首页</h2>\n      <p>这是由 create-fojs 生成的页面组件。</p>\n    </div>\n  )\n}\n`,
+      path.join(targetDir, 'src/pages/Home.vfo'),
+      `export const css = \`\n.page {\n  padding: 24px;\n}\n\`\n\nexport default () => {\n  return (\n    <div class=\"page\">\n      <h2>首页</h2>\n      <p>这是由 create-vfojs 生成的页面组件。</p>\n    </div>\n  )\n}\n`,
     );
 
     await writeText(
-      path.join(targetDir, 'src/App.fo'),
-      `// @ts-nocheck\nimport './app.less'\n\nexport default () => {\n  return (\n    <div class=\"page\">\n      <div class=\"card\">\n        <h1>fojs + Vue Router</h1>\n        <router-view />\n      </div>\n    </div>\n  )\n}\n`,
+      path.join(targetDir, 'src/App.vfo'),
+      `// @ts-nocheck\nimport './app.less'\n\nexport default () => {\n  return (\n    <div class=\"page\">\n      <div class=\"card\">\n        <h1>vfojs + Vue Router</h1>\n        <router-view />\n      </div>\n    </div>\n  )\n}\n`,
     );
 
     await writeText(
       path.join(targetDir, 'src/main.ts'),
-      `import { createApp } from 'vue'\nimport './style.css'\nimport App from './App.fo'\nimport { router } from './router'\n\ncreateApp(App).use(router).mount('#app')\n`,
+      `import { createApp } from 'vue'\nimport './style.css'\nimport App from './App.vfo'\nimport { router } from './router'\n\ncreateApp(App).use(router).mount('#app')\n`,
     );
   }
 

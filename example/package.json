@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "fo-ui": "file:../packages/fo-ui",
-    "fojs": "file:..",
+    "@fo4/vfojs": "file:..",
     "vue": "^3.5.32"
   },
   "devDependencies": {

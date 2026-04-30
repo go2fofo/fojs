@@ -1,5 +1,5 @@
 {
-  "name": "fojs-playground",
+  "name": "vfojs-playground",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "fojs": "file:..",
+    "@fo4/vfojs": "file:..",
     "vue": "^3.4.0"
   },
   "devDependencies": {
@@ -20,4 +20,3 @@
     "vue-tsc": "^3.2.0"
   }
 }
-

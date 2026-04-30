@@ -1,5 +1,5 @@
 /**
- * 说明：用于关闭对 `.fo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
+ * 说明：用于关闭对 `.vfo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
  */
 // @ts-nocheck
 export const css = `

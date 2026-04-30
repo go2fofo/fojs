@@ -1,5 +1,5 @@
 /**
- * 说明：用于关闭对 `.fo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
+ * 说明：用于关闭对 `.vfo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
  */
 // @ts-nocheck
 export const css = `
@@ -15,7 +15,7 @@ export const css = `
 `
 
 /**
- * 演示：在 `.fo` 文件中使用 `export const css = \`...\`` 声明样式，并自动作用域隔离
+ * 演示：在 `.vfo` 文件中使用 `export const css = \`...\`` 声明样式，并自动作用域隔离
  */
 export default () => {
   return (

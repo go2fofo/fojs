@@ -1,18 +1,18 @@
 # 功能说明与变更记录
 
-本文件用于记录 fojs 的核心功能点与变更内容。
+本文件用于记录 vfojs 的核心功能点与变更内容。
 
 ## 核心功能
 
-### 1. `.fo` 文件编译
+### 1. `.vfo` 文件编译
 
-- 通过 Vite 插件拦截 `.fo` 后缀文件
+- 通过 Vite 插件拦截 `.vfo` 后缀文件
 - 使用 Babel 将 TSX/JSX 转换为 Vue 渲染函数
 - 默认导出函数会自动包装为 `defineComponent({ setup })`
 
 ### 2. 自动注入 Composition API
 
-在 `.fo` 文件中默认可直接使用以下 API（无需手动 import）：
+在 `.vfo` 文件中默认可直接使用以下 API（无需手动 import）：
 
 - 响应式：`ref`、`reactive`、`computed`、`watch`、`watchEffect`
 - 生命周期：`onMounted`、`onUnmounted`、`onUpdated`
@@ -20,7 +20,7 @@
 
 ### 3. 类型支持
 
-- 提供 `shims-fo.d.ts`，让 TypeScript/VSCode 识别 `.fo` 模块
+- 提供 `shims-vfo.d.ts`，让 TypeScript/VSCode 识别 `.vfo` 模块
 - 提供 JSX IntrinsicElements 的兜底类型，减少编辑器报错
 
 ### 4. 发布支持
@@ -30,13 +30,13 @@
 
 ### 5. Scoped CSS
 
-- 在 `.fo` 中声明 `export const css = \`...\``（或 `export const style = \`...\``）
+- 在 `.vfo` 中声明 `export const css = \`...\``（或 `export const style = \`...\``）
 - 构建时自动注入样式到页面
 - 通过作用域类名实现隔离，减少样式污染
 
 ### 6. 细化 HMR（热更新）
 
-- 在开发模式下为 `.fo` 组件注入 Vue HMR 逻辑
+- 在开发模式下为 `.vfo` 组件注入 Vue HMR 逻辑
 - 优先尝试组件级替换，减少整页刷新概率
 
 ### 7. 属性透传（Attribute Fallthrough）
@@ -59,9 +59,9 @@
 - 支持 `<input $value={state.xxx} />`
 - 编译为 `modelValue` + `onUpdate:modelValue` 的等价写法
 
-### 11. CLI（create-fojs）
+### 11. CLI（create-vfojs）
 
-- 提供 `create-fojs` 脚手架（目录：`/packages/create-fojs`）
+- 提供 `create-vfojs` 脚手架（目录：`/packages/create-vfojs`）
 - 支持可选集成：
   - Tailwind CSS（`--tailwind`）
   - Vue Router（`--router`）
@@ -69,7 +69,7 @@
 ### 12. 官方文档与 Playground
 
 - 文档基于 VitePress（目录：`/docs`）
-- 提供最小 Playground（目录：`/playground`），支持浏览器中实时编译预览 `.fo`
+- 提供最小 Playground（目录：`/playground`），支持浏览器中实时编译预览 `.vfo`
 
 ### 13. 基准测试（Benchmark）
 
@@ -82,5 +82,5 @@
 
 ## 变更记录（手动维护）
 
-- 2026-04-29：完成 `.fo` 编译链路、自动注入 API、示例项目、npm/JSR 发布配置
-- 2026-04-29：新增 Scoped CSS、细化 HMR、属性透传、响应式解构、useFoStore、$value 语法糖、create-fojs、VitePress 文档、Playground、基准测试脚本
+- 2026-04-29：完成 `.vfo` 编译链路、自动注入 API、示例项目、npm/JSR 发布配置
+- 2026-04-29：新增 Scoped CSS、细化 HMR、属性透传、响应式解构、useFoStore、$value 语法糖、create-vfojs、VitePress 文档、Playground、基准测试脚本

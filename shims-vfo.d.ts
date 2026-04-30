@@ -1,10 +1,10 @@
-declare module "*.fo" {
+declare module "*.vfo" {
   import { DefineComponent } from "vue";
   const component: DefineComponent<{}, {}, any>;
   export default component;
 }
 
-// 在 .fo 文件中自动注入的 Vue API（无需手动 import）
+// 在 .vfo 文件中自动注入的 Vue API（无需手动 import）
 declare const ref: typeof import('vue')['ref'];
 declare const reactive: typeof import('vue')['reactive'];
 declare const computed: typeof import('vue')['computed'];
@@ -21,7 +21,7 @@ declare const useAttrs: typeof import('vue')['useAttrs'];
 declare const useSlots: typeof import('vue')['useSlots'];
 declare const toRef: typeof import('vue')['toRef'];
 
-// fojs 运行时注入的辅助函数（编译后的 .fo 模块内可直接使用）
+// vfojs 运行时注入的辅助函数（编译后的 .vfo 模块内可直接使用）
 declare function useFoStore<T extends Record<string, any>>(
   key?: string,
   init?: T | (() => T),

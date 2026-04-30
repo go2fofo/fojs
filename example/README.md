@@ -1,9 +1,9 @@
-# fojs 示例（Vue 3 + TypeScript + Vite）
+# vfojs 示例（Vue 3 + TypeScript + Vite）
 
-这个示例项目用于验证 `fojs` 的 `.fo` 文件能力：
+这个示例项目用于验证 `vfojs` 的 `.vfo` 文件能力：
 
 - 使用 TSX/JSX 语法编写 UI
-- 在逻辑层直接使用 Vue 3 Composition API（`ref/computed/watch/...`），并且在 `.fo` 文件里无需手动 `import`
+- 在逻辑层直接使用 Vue 3 Composition API（`ref/computed/watch/...`），并且在 `.vfo` 文件里无需手动 `import`
 
 ## 开发
 

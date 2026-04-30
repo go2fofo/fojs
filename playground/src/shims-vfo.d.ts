@@ -4,7 +4,6 @@
  * @LastEditTime: 2026-04-29 11:20:45
  * @LastEditors: fofo
  * @Description: 
- * @FilePath: /fojs/playground/src/shims-fo.d.ts
+ * @FilePath: /fojs/playground/src/shims-vfo.d.ts
  */
-/// <reference types="fojs/shims-fo" />
-
+/// <reference types="@fo4/vfojs/shims-vfo" />

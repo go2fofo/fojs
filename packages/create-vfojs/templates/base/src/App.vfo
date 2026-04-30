@@ -1,5 +1,5 @@
 /**
- * 说明：用于关闭对 `.fo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
+ * 说明：用于关闭对 `.vfo` 文件的 TypeScript 类型检查（避免编辑器对 JSX 运行时的误判）
  */
 // @ts-nocheck
 import './app.less'
@@ -110,7 +110,7 @@ input {
 }
 `;
 
-const 计数卡片 = (context) => {
+const myCard = (context) => {
   const props = defineProps<{
     title: string
     count?: number
@@ -146,7 +146,7 @@ const 计数卡片 = (context) => {
 
 export default () => {
   const count = ref(0)
-  const state = useFoStore('demo', () => ({ name: 'fojs' }))
+  const state = useFoStore('demo', () => ({ name: 'vfojs' }))
   const emitLogs = ref([])
 
   const inc = () => {
@@ -158,12 +158,12 @@ export default () => {
     <div class="page">
       <div class="hero">
         <div>
-          <h1 class="title">fojs 项目</h1>
-          <p class="sub">这是由 create-fojs 生成的初始页面，你可以直接改这份 .fo 看热更新效果。</p>
+          <h1 class="title">vfojs 项目</h1>
+          <p class="sub">这是由 create-vfojs 生成的初始页面，你可以直接改这份 .vfo 看热更新效果。</p>
         </div>
         <div class="badge">
           <span class="dot" />
-          <span>Vite + Vue + fojs</span>
+          <span>Vite + Vue + vfojs</span>
         </div>
       </div>
 
@@ -201,7 +201,7 @@ export default () => {
       </div>
 
       <div style="margin-top: 14px;">
-        <计数卡片
+        <myCard
           title="从父组件传入的标题"
           count={count.value}
           onUpdate:count={(v) => (count.value = v)}

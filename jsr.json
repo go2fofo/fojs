@@ -1,10 +1,10 @@
 {
-    "name": "@fo4/fojs",
+    "name": "@fo4/vfojs",
     "version": "1.0.3",
     "license": "MIT",
     "exports": {
         ".": "./src/index.ts",
-        "./create": "./packages/create-fojs/bin/create-fojs.mjs"
+        "./create": "./packages/create-vfojs/bin/create-vfojs.mjs"
     },
     "publish": {
         "exclude": [
@@ -12,12 +12,12 @@
             "playground",
             "example",
             "dist",
-            "shims-fo.d.ts",
+            "shims-vfo.d.ts",
             "**/dist/**",
             "node_modules",
             "fojs.md",
             "fojs.ai.spec.md",
-            "!packages/create-fojs/templates/**"
+            "!packages/create-vfojs/templates/**"
         ]
     },
     "imports": {
