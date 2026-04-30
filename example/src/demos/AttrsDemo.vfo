@@ -19,7 +19,7 @@ export const css = `
 /**
  * 子组件：用于展示“根节点会接收外部 attrs”的效果
  */
-const 子组件 = () => {
+const myComponent = () => {
   return (
     <div class="child">
       <h3>子组件根节点</h3>
@@ -35,7 +35,7 @@ export default () => {
   return (
     <div class="wrap">
       <h2>属性透传</h2>
-      <子组件 class="外部class" id="attrs-demo" style="background: #1e74c9ff;" />
+      <myComponent class="外部class" id="attrs-demo" style="background: #1e74c9ff;" />
     </div>
   )
 }

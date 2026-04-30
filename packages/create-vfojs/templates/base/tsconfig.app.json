@@ -13,6 +13,8 @@
     "jsxImportSource": "vue",
     "strict": false
   },
+  "vueCompilerOptions": {
+    "plugins": ["./volar-plugins/vfojs-language-plugin.cjs"]
+  },
   "include": ["src/**/*"]
 }
-

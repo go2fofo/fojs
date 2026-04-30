@@ -12,5 +12,8 @@
     "jsx": "preserve",
     "jsxImportSource": "vue"
   },
+  "vueCompilerOptions": {
+    "plugins": ["./volar-plugins/vfojs-language-plugin.cjs"]
+  },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.vfo"]
 }
