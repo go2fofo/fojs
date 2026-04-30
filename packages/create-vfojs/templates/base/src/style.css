@@ -4,5 +4,13 @@
 
 body {
   margin: 0;
+  background: #070312;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(167, 139, 250, 0.35);
+}

@@ -156,59 +156,61 @@ export default () => {
 
   return (
     <div class="page">
-      <div class="hero">
-        <div>
-          <h1 class="title">vfojs 项目</h1>
-          <p class="sub">这是由 create-vfojs 生成的初始页面，你可以直接改这份 .vfo 看热更新效果。</p>
-        </div>
-        <div class="badge">
-          <span class="dot" />
-          <span>Vite + Vue + vfojs</span>
-        </div>
-      </div>
-
-      <div class="grid">
-        <div class="card">
-          <h2 class="cardTitle">快速体验</h2>
-          <div class="row">
-            <button class="btn" onClick={inc}>计数 + 1</button>
-            <span class="muted">当前计数：</span>
-            <strong>{count.value}</strong>
+      <div class="container">
+        <div class="hero">
+          <div>
+            <h1 class="title">vfojs 项目</h1>
+            <p class="sub">这是由 create-vfojs 生成的初始页面，你可以直接改这份 .vfo 看热更新效果。</p>
           </div>
-
-          <div class="kpi">
-            <div class="kpiBox">
-              <div class="kpiLabel">全局状态（useFoStore）</div>
-              <div class="kpiValue">{state.name}</div>
-            </div>
-            <div class="kpiBox">
-              <div class="kpiLabel">本地状态（ref）</div>
-              <div class="kpiValue">{count.value}</div>
-            </div>
+          <div class="badge">
+            <span class="dot" />
+            <span>Vite + Vue + vfojs</span>
           </div>
         </div>
 
-        <div class="card">
-          <h2 class="cardTitle">语法糖：$value</h2>
-          <p class="muted" style="margin: 0 0 10px;">
-            直接把状态变量绑定到输入框，输入会自动回写。
-          </p>
-          <input $value={state.name} placeholder="请输入名称" />
-          <p class="muted" style="margin: 10px 0 0;">
-            当前值：<strong>{state.name}</strong>
-          </p>
-        </div>
-      </div>
+        <div class="grid">
+          <div class="card">
+            <h2 class="cardTitle">快速体验</h2>
+            <div class="row">
+              <button class="btn" onClick={inc}>计数 + 1</button>
+              <span class="muted">当前计数：</span>
+              <strong>{count.value}</strong>
+            </div>
 
-      <div style="margin-top: 14px;">
-        <myCard
-          title="从父组件传入的标题"
-          count={count.value}
-          onUpdate:count={(v) => (count.value = v)}
-          onChange={(v) => push(`父组件收到 change：${v}`)}
-        />
-        <div class="muted" style="margin-top: 10px;">
-          {emitLogs.value.length === 0 ? '暂无日志，点击上面按钮试试。' : emitLogs.value.map((x) => <div>{x}</div>)}
+            <div class="kpi">
+              <div class="kpiBox">
+                <div class="kpiLabel">全局状态（useFoStore）</div>
+                <div class="kpiValue">{state.name}</div>
+              </div>
+              <div class="kpiBox">
+                <div class="kpiLabel">本地状态（ref）</div>
+                <div class="kpiValue">{count.value}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2 class="cardTitle">语法糖：$value</h2>
+            <p class="muted" style="margin: 0 0 10px;">
+              直接把状态变量绑定到输入框，输入会自动回写。
+            </p>
+            <input $value={state.name} placeholder="请输入名称" />
+            <p class="muted" style="margin: 10px 0 0;">
+              当前值：<strong>{state.name}</strong>
+            </p>
+          </div>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <myCard
+            title="从父组件传入的标题"
+            count={count.value}
+            onUpdate:count={(v) => (count.value = v)}
+            onChange={(v) => push(`父组件收到 change：${v}`)}
+          />
+          <div class="muted log" style="margin-top: 10px;">
+            {emitLogs.value.length === 0 ? '暂无日志，点击上面按钮试试。' : emitLogs.value.map((x) => <div class="logItem">{x}</div>)}
+          </div>
         </div>
       </div>
     </div>

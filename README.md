@@ -1,8 +1,7 @@
+
+![vfojs](./docs/vfo.png)
 # vfojs
 
-**一个前端 DSL 框架：React 的外壳，Vue 的灵魂。**
-
-vfojs 是 **Vue 3 的超集**。它以非侵入式的方式深度集成于 Vue 生态，允许你在同一个项目中混合使用 `.vue` 标准组件与 `.vfo` 魔法组件。
 
 - **React 体验**：使用 TSX/JSX 构建 UI，支持同文件多组件组合。
 - **Vue 性能**：逻辑层直接复用 Vue 3 Composition API 响应式系统。
@@ -289,3 +288,4 @@ cd my-app
 npm i
 npm run dev
 ```
+
