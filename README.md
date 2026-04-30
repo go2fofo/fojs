@@ -154,6 +154,22 @@ export default () => {
 }
 ```
 
+### 7.1）编译期宏：`$ref`（极致“去 .value”）
+
+你可以写：
+
+```tsx
+export default () => {
+  let count = $ref(0)
+  const inc = () => count++
+  return <button onClick={inc}>count：{count}</button>
+}
+```
+
+vfojs 会在编译时自动把它变成 `ref(...)`，并在使用 `count` 的地方自动补全 `.value`。
+
+如果你需要拿到“原始 ref 对象”（例如传给子组件做双向绑定），可以写 `$$(count)`，它会在编译时被还原成 `count`（不会自动解包）。
+
 ### 8）指令语法糖：`$value`
 
 你可以写：
@@ -288,4 +304,3 @@ cd my-app
 npm i
 npm run dev
 ```
-

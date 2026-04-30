@@ -22,16 +22,24 @@ input {
  * - 自定义组件：编译为 `modelValue` + `onUpdate:modelValue`
  */
 export default () => {
-  const state = useFoStore('model-demo', () => ({ name: 'vfojs-useFoStore' }))
-  const stateRef = ref("ref")
-
+  const state = useFoStore('model-demo', () => ({ name: 'fojs-useFoStore' }))
+  const stateRef = $ref("ref")
+   let count = $ref(0)
+  const inc = () => {
+    count++
+  }
   return (
     <div class="wrap">
       <h2>语法糖：$value</h2>
       <p>当前值：{state.name}</p>
       <input $value={state.name} placeholder="请输入名称" />
-      <p>当前值：{stateRef.value}</p>
-      <input $value={stateRef.value} placeholder="请输入名称" />
+      <p>当前值：{stateRef}</p>
+      <input $value={stateRef} placeholder="请输入名称" />
+      <div class="row">
+          <button class="btn" onClick={inc}>计数 + 1</button>
+          <span class="muted">当前计数：</span>
+          <strong>{count}</strong>
+      </div>
     </div>
   )
 }

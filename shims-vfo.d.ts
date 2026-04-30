@@ -1,3 +1,11 @@
+/*
+ * @Author: fofo
+ * @Date: 2026-04-29 10:17:58
+ * @LastEditTime: 2026-04-30 13:41:28
+ * @LastEditors: fofo
+ * @Description: 
+ * @FilePath: /fojs/shims-vfo.d.ts
+ */
 declare module "*.vfo" {
   import { DefineComponent } from "vue";
   const component: DefineComponent<{}, {}, any>;
@@ -20,6 +28,11 @@ declare const Transition: typeof import('vue')['Transition'];
 declare const useAttrs: typeof import('vue')['useAttrs'];
 declare const useSlots: typeof import('vue')['useSlots'];
 declare const toRef: typeof import('vue')['toRef'];
+
+// 编译期宏（用于“去 .value”）：仅在 .vfo 中使用，运行时会被编译器抹掉
+declare function $ref<T>(value: T): import('vue').UnwrapRef<T>;
+declare function $computed<T>(getter: () => T): T;
+declare function $$<T = any>(value: T): T;
 
 // vfojs 运行时注入的辅助函数（编译后的 .vfo 模块内可直接使用）
 declare function useFoStore<T extends Record<string, any>>(

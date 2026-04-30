@@ -145,14 +145,14 @@ const myCard = (context) => {
 }
 
 export default () => {
-  const count = ref(0)
+  let count = $ref(0)
   const state = useFoStore('demo', () => ({ name: 'vfojs' }))
-  const emitLogs = ref([])
+  let emitLogs = $ref<string[]>([])
 
   const inc = () => {
-    count.value++
+    count++
   }
-  const push = (msg) => emitLogs.value.unshift(msg)
+  const push = (msg) => emitLogs.unshift(msg)
 
   return (
     <div class="page">
@@ -174,7 +174,7 @@ export default () => {
             <div class="row">
               <button class="btn" onClick={inc}>计数 + 1</button>
               <span class="muted">当前计数：</span>
-              <strong>{count.value}</strong>
+              <strong>{count}</strong>
             </div>
 
             <div class="kpi">
@@ -184,7 +184,7 @@ export default () => {
               </div>
               <div class="kpiBox">
                 <div class="kpiLabel">本地状态（ref）</div>
-                <div class="kpiValue">{count.value}</div>
+                  <div class="kpiValue">{count}</div>
               </div>
             </div>
           </div>
@@ -204,12 +204,12 @@ export default () => {
         <div style="margin-top: 14px;">
           <myCard
             title="从父组件传入的标题"
-            count={count.value}
-            onUpdate:count={(v) => (count.value = v)}
+            count={count}
+            onUpdate:count={(v) => (count = v)}
             onChange={(v) => push(`父组件收到 change：${v}`)}
           />
           <div class="muted log" style="margin-top: 10px;">
-            {emitLogs.value.length === 0 ? '暂无日志，点击上面按钮试试。' : emitLogs.value.map((x) => <div class="logItem">{x}</div>)}
+            {emitLogs.length === 0 ? '暂无日志，点击上面按钮试试。' : emitLogs.map((x) => <div class="logItem">{x}</div>)}
           </div>
         </div>
       </div>

@@ -16,6 +16,8 @@ export default function babelPluginVfojs(): PluginObj {
   const VFOJS_MAIN = '__vfojs_main';
   const VFOJS_SCOPE_CLASS = '__vfojs_scope_class';
   const VFOJS_ATTRS = '__vfojs_attrs';
+  const VFOJS_REF_MACRO = '__vfojs_ref_macro';
+  const VFOJS_RAW_REF = '__vfojs_raw_ref';
 
   /**
    * 生成一个稳定的短哈希（用于作用域类名与 HMR id 的稳定性）
@@ -48,6 +50,7 @@ export default function babelPluginVfojs(): PluginObj {
   let scopedCssText: string | null = null;
   let scopeClassName: string | null = null;
   let usedComponentNames = new Set<string>();
+  let refMacroBindings = new Set<any>();
 
   const isNativeTagName = (name: string) => {
     const c = name[0] || '';
@@ -215,6 +218,7 @@ export default function babelPluginVfojs(): PluginObj {
           scopedCssText = null;
           scopeClassName = getScopeClassByFilename(state?.file?.opts?.filename);
           usedComponentNames = new Set<string>();
+          refMacroBindings = new Set<any>();
 
           path.traverse({
             JSXOpeningElement(p: any) {
@@ -226,7 +230,94 @@ export default function babelPluginVfojs(): PluginObj {
             },
           });
         },
-        exit(path) {
+        exit(path: any) {
+          path.traverse({
+            VariableDeclarator(p: any) {
+              const id = p.node.id;
+              if (!t.isIdentifier(id)) return;
+              if ((p.node as any)[VFOJS_REF_MACRO] !== true) return;
+              const binding = p.scope.getBinding(id.name);
+              if (binding) refMacroBindings.add(binding);
+            },
+          });
+
+          path.traverse({
+            CallExpression(p: any) {
+              const callee = p.node.callee;
+              if (!t.isIdentifier(callee) || callee.name !== '$$') return;
+              const args = p.node.arguments || [];
+              if (args.length !== 1) return;
+              const arg = args[0];
+              if (!t.isExpression(arg)) return;
+              (arg as any)[VFOJS_RAW_REF] = true;
+              p.replaceWith(arg);
+            },
+          });
+
+          path.traverse({
+            Identifier(p: any) {
+              if ((p.node as any)[VFOJS_RAW_REF] === true) return;
+              const name = p.node.name;
+
+              const binding = p.scope.getBinding(name);
+              if (!binding || !refMacroBindings.has(binding)) return;
+
+              const parent = p.parentPath;
+
+              if (parent.isVariableDeclarator() && parent.get('id') === p) return;
+              if (parent.isFunctionDeclaration() && parent.get('id') === p) return;
+              if (parent.isFunctionExpression() && parent.get('id') === p) return;
+              if (parent.isClassDeclaration() && parent.get('id') === p) return;
+              if (parent.isClassExpression() && parent.get('id') === p) return;
+              if (parent.isImportSpecifier() || parent.isImportDefaultSpecifier() || parent.isImportNamespaceSpecifier()) return;
+              if (parent.isExportSpecifier()) return;
+              if (parent.isJSXIdentifier()) return;
+
+              if (parent.isObjectProperty() && parent.get('key') === p && parent.node.computed !== true) return;
+              if (parent.isObjectMethod() && parent.get('key') === p && parent.node.computed !== true) return;
+
+              if (parent.isMemberExpression() && parent.get('property') === p && parent.node.computed !== true) return;
+              if ((parent as any).isOptionalMemberExpression?.() && parent.get('property') === p && parent.node.computed !== true) return;
+
+              if (
+                (parent.isMemberExpression() || (parent as any).isOptionalMemberExpression?.()) &&
+                parent.get('object') === p &&
+                !parent.node.computed &&
+                t.isIdentifier((parent.node as any).property) &&
+                ((parent.node as any).property as any).name === 'value'
+              ) {
+                return;
+              }
+
+              if (parent.isObjectPattern() || parent.isArrayPattern() || parent.isRestElement()) return;
+              if (parent.isAssignmentPattern() && parent.get('left') === p) return;
+
+              const asValue = () => t.memberExpression(t.identifier(name), t.identifier('value'));
+
+              if (parent.isUpdateExpression() && parent.get('argument') === p) {
+                p.replaceWith(asValue());
+                return;
+              }
+
+              if (parent.isAssignmentExpression() && parent.get('left') === p) {
+                p.replaceWith(asValue());
+                return;
+              }
+
+              if (parent.isForInStatement() && parent.get('left') === p) {
+                p.replaceWith(asValue() as any);
+                return;
+              }
+
+              if (parent.isForOfStatement() && parent.get('left') === p) {
+                p.replaceWith(asValue() as any);
+                return;
+              }
+
+              p.replaceWith(asValue());
+            },
+          });
+
           if (!scopedCssText || !scopeClassName) return;
 
           const cssText = scopedCssText;
@@ -351,6 +442,19 @@ export default function babelPluginVfojs(): PluginObj {
         const id = path.node.id;
         const init = path.node.init;
         if (!t.isIdentifier(id)) return;
+
+        if (
+          init &&
+          t.isCallExpression(init) &&
+          t.isIdentifier(init.callee) &&
+          (init.callee.name === '$ref' || init.callee.name === '$computed')
+        ) {
+          if (init.callee.name === '$ref') init.callee = t.identifier('ref');
+          if (init.callee.name === '$computed') init.callee = t.identifier('computed');
+          (path.node as any)[VFOJS_REF_MACRO] = true;
+          return;
+        }
+
         if (!usedComponentNames.has(id.name)) return;
 
         const decl = path.parentPath;
