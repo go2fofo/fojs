@@ -1,7 +1,16 @@
+![vfojs](https://raw.githubusercontent.com/go2fofo/fojs/main/docs/vfo.png)
 
-![vfojs](./docs/vfo.png)
+
+
+[![npm version](https://img.shields.io/npm/v/@fo4/vfojs?color=42b883)](https://www.npmjs.com/package/@fo4/vfojs)
+[![npm 项目地址](https://img.shields.io/npm/dw/@fo4/vfojs?color=42b883)](https://www.npmjs.com/package/@fo4/vfojs)
+[![node version](https://img.shields.io/badge/node-%3E%3D20.0.0-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![license](https://img.shields.io/npm/l/@fo4/vfojs?color=42b883)](https://github.com/fo4-org/vfojs/blob/main/LICENSE)
+[![vue version](https://img.shields.io/badge/vue-^3.4.0-42b883)](https://vuejs.org/)
+
+
+
 # vfojs
-
 
 - **React 体验**：使用 TSX/JSX 构建 UI，支持同文件多组件组合。
 - **Vue 性能**：逻辑层直接复用 Vue 3 Composition API 响应式系统。
@@ -304,3 +313,14 @@ cd my-app
 npm i
 npm run dev
 ```
+
+## 工具链
+
+| 模块 | 说明 |
+| :--- | :--- |
+| **`create-vfojs`** | 快速创建项目的 CLI 脚手架 |
+| **`@fo4/vfojs-language-plugin`** | 提供 IDE 类型检查与 JSX 属性提示 |
+| **`vscode-vfo`** | 提供 IDE 插件，支持 vfojs 语法 （暂未上架）|
+| **`fo-ui`** | 基于 vfojs 构建的组件库（开发中） |
+
+---

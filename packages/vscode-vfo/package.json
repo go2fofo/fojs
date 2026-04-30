@@ -1,0 +1,67 @@
+{
+  "name": "vscode-vfo",
+  "publisher": "fo4",
+  "displayName": "vfojs (.vfo)",
+  "description": "为 vfojs (.vfo) 提供语言服务（高亮/诊断/补全），基于 @fo4/vfojs-language-plugin。",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "./dist/extension.js",
+  "icon": "assets/icon.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fo4/vfojs"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "workspaceContains:**/*.vfo"
+  ],
+  "contributes": {
+    "configurationDefaults": {
+      "files.associations": {
+        "*.vfo": "typescriptreact"
+      }
+    },
+    "volar.langs": [
+      {
+        "id": "vfo",
+        "extensions": [
+          ".vfo"
+        ],
+        "languageId": "vue"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "package": "npm run build && vsce package",
+    "publish": "npm run build && vsce publish"
+  },
+  "dependencies": {
+    "@fo4/vfojs-language-plugin": "^0.1.0",
+    "@vue/language-core": "^3.2.0",
+    "@vue/language-server": "^3.2.0",
+    "@volar/language-server": "^2.0.0",
+    "typescript": "^5.3.0",
+    "vscode-languageclient": "^9.0.1"
+  },
+  "overrides": {
+    "cheerio": "1.0.0-rc.12"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "vsce": "^2.15.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  }
+}
